@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>sts_scheduling</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Utils\" />
+    <None Remove="Data\" />
+    <None Remove="Service\" />
+    <None Remove="Service\Interface\" />
+    <None Remove="Service\Implementation\" />
+    <None Remove="Models\" />
+    <None Remove="Swashbuckle.AspNetCore" />
+    <None Remove="Models\Requests\" />
+    <None Remove="Models\Responses\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Utils\" />
+    <Folder Include="Datas\" />
+    <Folder Include="Service\" />
+    <Folder Include="Service\Interfaces\" />
+    <Folder Include="Service\Implementations\" />
+    <Folder Include="Models\" />
+    <Folder Include="Models\Requests\" />
+    <Folder Include="Models\Responses\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.4" />
+  </ItemGroup>
+</Project>
