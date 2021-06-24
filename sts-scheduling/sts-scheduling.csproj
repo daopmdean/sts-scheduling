@@ -15,18 +15,22 @@
     <None Remove="Swashbuckle.AspNetCore" />
     <None Remove="Models\Requests\" />
     <None Remove="Models\Responses\" />
+    <None Remove="Enums\" />
+    <None Remove="Google.OrTools" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Utils\" />
-    <Folder Include="Datas\" />
+    <Folder Include="Data\" />
     <Folder Include="Service\" />
     <Folder Include="Service\Interfaces\" />
     <Folder Include="Service\Implementations\" />
     <Folder Include="Models\" />
     <Folder Include="Models\Requests\" />
     <Folder Include="Models\Responses\" />
+    <Folder Include="Enums\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.4" />
+    <PackageReference Include="Google.OrTools" Version="9.0.9048" />
   </ItemGroup>
 </Project>
