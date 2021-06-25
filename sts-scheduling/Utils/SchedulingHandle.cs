@@ -244,7 +244,6 @@ namespace sts_scheduling.Utils
             solver.StringParameters = $"num_search_workers:8, max_time_in_seconds:{timeLimit}";
             CpSolverStatus status1 = solver.Solve(model);
 
-
             using StreamWriter writer = new StreamWriter(filePath);
             Console.SetOut(writer);
             Console.WriteLine("Statistics");
@@ -311,7 +310,9 @@ namespace sts_scheduling.Utils
             }
         }
 
-        public static IntVar[,,,] NewBoolVars(CpModel model, string namePrefix, int numStaffs, int numDays, int numPosition, int numTimeFrames)
+        private static IntVar[,,,] NewBoolVars(CpModel model, string namePrefix, 
+            int numStaffs, int numDays, int numPosition, 
+            int numTimeFrames)
         {
             IntVar[,,,] work = new IntVar[numStaffs, numPosition, numDays, numTimeFrames];
             foreach (int s in Range(numStaffs))
@@ -338,8 +339,9 @@ namespace sts_scheduling.Utils
         /// <param name="numPosition"></param>
         /// <param name="numDays"></param>
         /// <param name="numTimeFrames"></param>
-        static void AddWokingInAvailableTimeConstrain(CpModel model, IntVar[,,,] work_sche, int[,,] availableTimes,
-                                                        int numStaffs, int numPosition, int numDays, int numTimeFrames)
+        private static void AddWokingInAvailableTimeConstrain(CpModel model, IntVar[,,,] work_sche, 
+            int[,,] availableTimes, int numStaffs, 
+            int numPosition, int numDays, int numTimeFrames)
         {
             foreach (int e in Range(numStaffs))
             {
@@ -356,7 +358,9 @@ namespace sts_scheduling.Utils
             }
         }
 
-        static void AddLimitWokingTimeByWeekConstraint(CpModel model, IntVar[,,,] work_ft, int staffIndex, int numPosition, int numDays, int numTimeFrames, int min, int max)
+        private void AddLimitWokingTimeByWeekConstraint(CpModel model, IntVar[,,,] work_ft, 
+            int staffIndex, int numPosition, int numDays, 
+            int numTimeFrames, int min, int max)
         {
             var sumWorkTimeByWeek = new List<IntVar>();
             foreach (int d in Range(numDays))
@@ -375,8 +379,9 @@ namespace sts_scheduling.Utils
             // model.Add(sumWorkTimeByWeek <= max);
         }
 
-        static void AddWorkBySkillConstraint(CpModel model, IntVar[,,,] work_ft,
-                                                 int numStaffs, int numPosition, int numDays, int numTimeFrames, int[,] skillStaffs)
+        private static void AddWorkBySkillConstraint(CpModel model, IntVar[,,,] work_ft,
+            int numStaffs, int numPosition, int numDays, 
+            int numTimeFrames, int[,] skillStaffs)
         {
             foreach (int s in Range(numStaffs))
             {
@@ -389,9 +394,7 @@ namespace sts_scheduling.Utils
                         {
                             foreach (int t in Range(numTimeFrames))
                             {
-
                                 sequence.Add(work_ft[s, p, d, t].Not());
-
                             }
                         }
 
@@ -400,8 +403,8 @@ namespace sts_scheduling.Utils
                 }
             }
         }
-        static void AddUniqueWorkConstraint(CpModel model, IntVar[,,,] work_ft,
-                                                 int numStaffs, int numPosition, int numDays, int numTimeFrames)
+        private static void AddUniqueWorkConstraint(CpModel model, IntVar[,,,] work_ft,
+            int numStaffs, int numPosition, int numDays, int numTimeFrames)
         {
             foreach (int s in Range(numStaffs))
             {
@@ -410,19 +413,21 @@ namespace sts_scheduling.Utils
                     foreach (int t in Range(numTimeFrames))
                     {
                         var sum = new IntVar[numPosition];
+
                         foreach (int k in Range(numPosition))
                         {
                             sum[k] = work_ft[s, k, d, t];
                         }
 
                         model.Add(LinearExpr.Sum(sum) <= 1);
-
                     }
                 }
             }
         }
-        static void AddDomainWokingTimeConstraints(CpModel model, IntVar[,,,] work_ft,
-                                                 int numStaffs, int numPosition, int numDays, int numTimeFrames, int timeStart, int timeEnd)
+
+        private static void AddDomainWokingTimeConstraints(CpModel model, IntVar[,,,] work_ft,
+            int numStaffs, int numPosition, int numDays, 
+            int numTimeFrames, int timeStart, int timeEnd)
         {
             foreach (int s in Range(numStaffs))
             {
@@ -450,8 +455,9 @@ namespace sts_scheduling.Utils
                 }
             }
         }
-        static void AddMaxWorkingTimeInDayConstraints(CpModel model, IntVar[,,,] work_sch,
-                                                 int numStaffs, int numPosition, int numDays, int numTimeFrames, int maxWorkingTimeInDay)
+        private static void AddMaxWorkingTimeInDayConstraints(CpModel model, IntVar[,,,] work_sch,
+            int numStaffs, int numPosition, int numDays, 
+            int numTimeFrames, int maxWorkingTimeInDay)
         {
             foreach (int s in Range(numStaffs))
             {
@@ -470,13 +476,15 @@ namespace sts_scheduling.Utils
             }
         }
 
-        static void AddMinDayOffConstrains(CpModel model, IntVar[,,,] work,
-                                                 int numStaffs, int numPosition, int numDays, int numTimeFrames, int mindayOff, int maxdayOff)
+        private static void AddMinDayOffConstrains(CpModel model, IntVar[,,,] work,
+            int numStaffs, int numPosition, int numDays,
+            int numTimeFrames, int mindayOff, int maxdayOff)
         {
             foreach (int s in Range(numStaffs))
             {
                 //Giá trị của dayWork = 1 nếu ngày d có làm và ngược lại
                 IntVar[] dayWorks = new IntVar[numDays];
+
                 foreach (int d in Range(numDays))
                 {
                     var name = $"workDay(staff={s},day={d})";
@@ -501,18 +509,15 @@ namespace sts_scheduling.Utils
             }
         }
 
-        static void countSubSequence(CpModel model)
-        {
-
-        }
-        static void AddSequenceConstraint(CpModel model, IntVar[] works, int maxShiftsInDay, int minShiftDuration, int maxShiftDuration, int numTimeFrames, IntVar count,
-            IntVar isWortAt)
+        private static void AddSequenceConstraint(CpModel model, IntVar[] works, 
+            int maxShiftsInDay, int minShiftDuration, int maxShiftDuration, 
+            int numTimeFrames, IntVar count, IntVar isWortAt)
         {
             //Đếm số sub-sequence(ca làm việc)
-
             var n = numTimeFrames;
             var arrTemp = new IntVar[n + 1];
             var arrTemp1 = new IntVar[n + 1];
+
             foreach (int t in Range(n + 1))
             {
                 arrTemp[t] = model.NewIntVar(0, 2, $"d_subsequence{t}");
@@ -593,7 +598,7 @@ namespace sts_scheduling.Utils
         /// <returns>An array of variables which conjunction will be false if the
         /// sub-list is assigned to True, and correctly bounded by variables assigned
         /// to False, or by the start or end of works.</returns>
-        static ILiteral[] NegatedBoundedSpan(IntVar[] works, int start, int length)
+        private static ILiteral[] NegatedBoundedSpan(IntVar[] works, int start, int length)
         {
             var sequence = new List<ILiteral>();
 
@@ -615,7 +620,7 @@ namespace sts_scheduling.Utils
         /// <param name="start">The inclusive start.</param>
         /// <param name="stop">The exclusive stop.</param>
         /// <returns>A sequence of integers.</returns>
-        public static IEnumerable<int> Range(int start, int stop)
+        private static IEnumerable<int> Range(int start, int stop)
         {
             foreach (var i in Enumerable.Range(start, stop - start))
                 yield return i;
@@ -626,7 +631,7 @@ namespace sts_scheduling.Utils
         /// </summary>
         /// <param name="stop">The exclusive stop.</param>
         /// <returns>A sequence of integers.</returns>
-        public static IEnumerable<int> Range(int stop)
+        private static IEnumerable<int> Range(int stop)
         {
             return Range(0, stop);
         }
