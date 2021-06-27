@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using sts_scheduling.Models.Requests;
+using sts_scheduling.Models.Responses;
 using sts_scheduling.Service.Interfaces;
 
 namespace sts_scheduling.Service.Implementations
@@ -7,6 +11,12 @@ namespace sts_scheduling.Service.Implementations
     {
         public ScheduleService()
         {
+        }
+
+        public Task<IEnumerator<ShiftAssignment>> ComputeSchedule(
+            SchedulingRequests requests)
+        {
+            throw new NotImplementedException();
         }
     }
 }

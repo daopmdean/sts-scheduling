@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using sts_scheduling.Models.Requests;
 using sts_scheduling.Models.Responses;
 using sts_scheduling.Service.Interfaces;
 
@@ -20,7 +21,8 @@ namespace sts_scheduling.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ComputeSchedule()
+        public async Task<ActionResult<IEnumerable<ShiftAssignment>>> ComputeSchedule(
+            SchedulingRequests request)
         {
             try
             {

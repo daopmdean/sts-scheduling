@@ -20,6 +20,7 @@ namespace sts_scheduling.Utils
             NumDay = 7;
             NumTimeFrame = 24;
         }
+
         public int GetTotalStaff()
         {
             return StaffDic[TypeStaff.FULL_TIME].Count + StaffDic[TypeStaff.PART_TIME].Count;
