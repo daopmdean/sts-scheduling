@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using sts_scheduling.Models.Requests;
@@ -25,6 +26,42 @@ namespace sts_scheduling.Controllers
             try
             {
                 return Ok(await _scheduleService.ComputeSchedule(request));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ErrorResponse
+                {
+                    StatusCode = 500,
+                    Message = ex.Message,
+                    StackTrace = ex.StackTrace
+                });
+            }
+        }
+
+        [HttpPost("testing")]
+        public ActionResult<ScheduleResponse> Testing(
+            ScheduleRequest request)
+        {
+            try
+            {
+                var a = new ShiftAssignment
+                {
+                    Username = "abc"
+                };
+                var b = new ShiftAssignment
+                {
+                    Username = "def"
+                };
+                List<ShiftAssignment> list = new();
+                list.AddRange(new ShiftAssignment[] { a, b });
+                var res = new ScheduleResponse
+                {
+                    Conflicts = 2,
+                    Branches = 1,
+                    WallTime = 10,
+                    ShiftAssignments = list
+                };
+                return Ok(res);
             }
             catch (Exception ex)
             {
