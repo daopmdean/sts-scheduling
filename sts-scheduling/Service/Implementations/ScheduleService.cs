@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using sts_scheduling.Models.Requests;
 using sts_scheduling.Models.Responses;
 using sts_scheduling.Service.Interfaces;
+using sts_scheduling.Utils;
 
 namespace sts_scheduling.Service.Implementations
 {
@@ -13,10 +13,14 @@ namespace sts_scheduling.Service.Implementations
         {
         }
 
-        public Task<IEnumerator<ShiftAssignment>> ComputeSchedule(
-            SchedulingRequests requests)
+        public async Task<ScheduleResponse> ComputeSchedule(
+            ScheduleRequest requests)
         {
-            throw new NotImplementedException();
+            SchedulingHandle s = new();
+
+            var scheduleResponse = new ScheduleResponse();
+            scheduleResponse.Conflicts = 1;
+            return scheduleResponse;
         }
     }
 }

@@ -35,29 +35,41 @@ namespace sts_scheduling.Utils
             var objIntCoeffs = new List<int>();
 
             var model = new CpModel();
-            IntVar[,,,] work_ft = NewBoolVars(model, "workFT", numFTStaffs, numDays, numPosition, numTimeFrames);
+            IntVar[,,,] work_ft = NewBoolVars(
+                model, "workFT", numFTStaffs, numDays, numPosition, numTimeFrames);
             int[,,,] sch_ft = new int[numFTStaffs, numPosition, numDays, numTimeFrames];
 
-            IntVar[,,,] work_pt = NewBoolVars(model, "workPT", numPTStaffs, numDays, numPosition, numTimeFrames);
+            IntVar[,,,] work_pt = NewBoolVars(
+                model, "workPT", numPTStaffs, numDays, numPosition, numTimeFrames);
             int[,,,] sch_pt = new int[numPTStaffs, numPosition, numDays, numTimeFrames];
 
             //--TODO Assign Fix Assignment
 
             //Nhân viên làm việc trong khoảng thời gian rãnh
-            AddWokingInAvailableTimeConstrain(model, work_ft, availableFT, numFTStaffs, numPosition, numDays, numTimeFrames);
+            AddWokingInAvailableTimeConstrain(
+                model, work_ft, availableFT, numFTStaffs,
+                numPosition, numDays, numTimeFrames);
 
             //Nhân viên làm việc trong khoảng thời gian rãnh
-            AddWokingInAvailableTimeConstrain(model, work_pt, availablePT, numPTStaffs, numPosition, numDays, numTimeFrames);
+            AddWokingInAvailableTimeConstrain(
+                model, work_pt, availablePT, numPTStaffs,
+                numPosition, numDays, numTimeFrames);
 
             //Tổng thời gian làm việc 1 tuần của nhân viên Fulltime, PartTime làm việc luôn nằm trong khoảng (min, max)
             foreach (int s in Range(numFTStaffs))
             {
-                AddLimitWokingTimeByWeekConstraint(model, work_ft, s, numPosition, numDays, numTimeFrames, ConstraintData.MinFTWorkingTimeOnWeek, ConstraintData.MaxFTWorkingTimeOnWeek);
+                AddLimitWokingTimeByWeekConstraint(
+                    model, work_ft, s, numPosition, numDays,
+                    numTimeFrames, ConstraintData.MinFTWorkingTimeOnWeek,
+                    ConstraintData.MaxFTWorkingTimeOnWeek);
             }
 
             foreach (int s in Range(numPTStaffs))
             {
-                AddLimitWokingTimeByWeekConstraint(model, work_pt, s, numPosition, numDays, numTimeFrames, ConstraintData.MinPTWorkOnWeek, ConstraintData.MaxPTWorkOnWeek);
+                AddLimitWokingTimeByWeekConstraint(
+                    model, work_pt, s, numPosition, numDays,
+                    numTimeFrames, ConstraintData.MinPTWorkOnWeek,
+                    ConstraintData.MaxPTWorkOnWeek);
             }
 
             //Constrains Ca làm việc có thể bắt đầu từ timeStart và kết thúc trước timeEnd
@@ -152,7 +164,6 @@ namespace sts_scheduling.Utils
 
                     foreach (int p in Range(numPosition))
                     {
-
                         var works = new List<IntVar>();
 
                         foreach (int s in Range(numFTStaffs))
@@ -310,8 +321,8 @@ namespace sts_scheduling.Utils
             }
         }
 
-        private static IntVar[,,,] NewBoolVars(CpModel model, string namePrefix, 
-            int numStaffs, int numDays, int numPosition, 
+        private static IntVar[,,,] NewBoolVars(CpModel model, string namePrefix,
+            int numStaffs, int numDays, int numPosition,
             int numTimeFrames)
         {
             IntVar[,,,] work = new IntVar[numStaffs, numPosition, numDays, numTimeFrames];
@@ -339,8 +350,9 @@ namespace sts_scheduling.Utils
         /// <param name="numPosition"></param>
         /// <param name="numDays"></param>
         /// <param name="numTimeFrames"></param>
-        private static void AddWokingInAvailableTimeConstrain(CpModel model, IntVar[,,,] work_sche, 
-            int[,,] availableTimes, int numStaffs, 
+        private static void AddWokingInAvailableTimeConstrain(
+            CpModel model, IntVar[,,,] work_sche,
+            int[,,] availableTimes, int numStaffs,
             int numPosition, int numDays, int numTimeFrames)
         {
             foreach (int e in Range(numStaffs))
@@ -358,8 +370,8 @@ namespace sts_scheduling.Utils
             }
         }
 
-        private void AddLimitWokingTimeByWeekConstraint(CpModel model, IntVar[,,,] work_ft, 
-            int staffIndex, int numPosition, int numDays, 
+        private static void AddLimitWokingTimeByWeekConstraint(CpModel model, IntVar[,,,] work_ft,
+            int staffIndex, int numPosition, int numDays,
             int numTimeFrames, int min, int max)
         {
             var sumWorkTimeByWeek = new List<IntVar>();
@@ -380,7 +392,7 @@ namespace sts_scheduling.Utils
         }
 
         private static void AddWorkBySkillConstraint(CpModel model, IntVar[,,,] work_ft,
-            int numStaffs, int numPosition, int numDays, 
+            int numStaffs, int numPosition, int numDays,
             int numTimeFrames, int[,] skillStaffs)
         {
             foreach (int s in Range(numStaffs))
@@ -426,7 +438,7 @@ namespace sts_scheduling.Utils
         }
 
         private static void AddDomainWokingTimeConstraints(CpModel model, IntVar[,,,] work_ft,
-            int numStaffs, int numPosition, int numDays, 
+            int numStaffs, int numPosition, int numDays,
             int numTimeFrames, int timeStart, int timeEnd)
         {
             foreach (int s in Range(numStaffs))
@@ -456,7 +468,7 @@ namespace sts_scheduling.Utils
             }
         }
         private static void AddMaxWorkingTimeInDayConstraints(CpModel model, IntVar[,,,] work_sch,
-            int numStaffs, int numPosition, int numDays, 
+            int numStaffs, int numPosition, int numDays,
             int numTimeFrames, int maxWorkingTimeInDay)
         {
             foreach (int s in Range(numStaffs))
@@ -509,8 +521,8 @@ namespace sts_scheduling.Utils
             }
         }
 
-        private static void AddSequenceConstraint(CpModel model, IntVar[] works, 
-            int maxShiftsInDay, int minShiftDuration, int maxShiftDuration, 
+        private static void AddSequenceConstraint(CpModel model, IntVar[] works,
+            int maxShiftsInDay, int minShiftDuration, int maxShiftDuration,
             int numTimeFrames, IntVar count, IntVar isWortAt)
         {
             //Đếm số sub-sequence(ca làm việc)

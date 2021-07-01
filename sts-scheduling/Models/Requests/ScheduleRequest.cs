@@ -2,7 +2,7 @@
 
 namespace sts_scheduling.Models.Requests
 {
-    public class SchedulingRequests
+    public class ScheduleRequest
     {
         public DataInput DataInput { get; set; }
 

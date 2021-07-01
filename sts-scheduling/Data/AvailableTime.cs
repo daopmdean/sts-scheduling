@@ -10,6 +10,5 @@ namespace sts_scheduling.Data
     class AvailablePool
     {
         public AvailableTime[] Availables { get; set; }//[day][timeIndex]
-
     }
 }
