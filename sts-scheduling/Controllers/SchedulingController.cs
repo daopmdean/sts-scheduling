@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using sts_scheduling.Models.Requests;
@@ -39,27 +38,16 @@ namespace sts_scheduling.Controllers
         }
 
         [HttpPost("testing")]
-        public ActionResult<ScheduleResponse> Testing(
-            ScheduleRequest request)
+        public ActionResult<ScheduleResponse> Testing()
         {
             try
             {
-                var a = new ShiftAssignment
-                {
-                    Username = "abc"
-                };
-                var b = new ShiftAssignment
-                {
-                    Username = "def"
-                };
-                List<ShiftAssignment> list = new();
-                list.AddRange(new ShiftAssignment[] { a, b });
                 var res = new ScheduleResponse
                 {
                     Conflicts = 2,
                     Branches = 1,
                     WallTime = 10,
-                    ShiftAssignments = list
+                    ShiftAssignments = Utils.Testing.GenerateShiftAssignments()
                 };
                 return Ok(res);
             }

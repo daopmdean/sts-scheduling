@@ -1,5 +1,4 @@
-﻿using System;
-namespace sts_scheduling.Enums
+﻿namespace sts_scheduling.Enums
 {
     public enum TypeStaff
     {
