@@ -34,6 +34,6 @@ jobs:
       with:
         app-name: sts-schedule
         slot-name: Production
-        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_954374E21D44425281E7C0914D138B14 }}
+        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_11EBF87E91474B8785BBAA2513CBED87 }}
         package: ${{env.DOTNET_ROOT}}/myapp
 
