@@ -18,6 +18,12 @@ namespace sts_scheduling.Controllers
             _scheduleService = scheduleService;
         }
 
+        [HttpGet]
+        public ActionResult Hello()
+        {
+            return Ok("Hello");
+        }
+
         [HttpPost]
         public async Task<ActionResult<ScheduleResponse>> ComputeSchedule(
             ScheduleRequest request)
@@ -47,7 +53,7 @@ namespace sts_scheduling.Controllers
                     Conflicts = 2,
                     Branches = 1,
                     WallTime = 10,
-                    ShiftAssignments = Utils.Testing.GenerateShiftAssignments()
+                    //ShiftAssignments = Utils.Testing.GenerateShiftAssignments()
                 };
                 return Ok(res);
             }
