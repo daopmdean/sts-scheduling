@@ -19,7 +19,6 @@ namespace sts_scheduling.Models.Requests
     {
         public int Day { get; set; }
         public List<AvailableTimeRequest> AvailableTimes { get; set; }
-
     }
 
     public class AvailableTimeRequest

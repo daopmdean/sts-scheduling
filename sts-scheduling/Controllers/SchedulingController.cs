@@ -31,8 +31,6 @@ namespace sts_scheduling.Controllers
             try
             {
                 return Ok(await _scheduleService.ComputeSchedule(request));
-
-
             }
             catch (Exception ex)
             {
