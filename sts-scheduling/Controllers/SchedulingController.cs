@@ -19,6 +19,24 @@ namespace sts_scheduling.Controllers
             _scheduleService = scheduleService;
         }
 
+        [HttpGet]
+        public ActionResult Get()
+        {
+            try
+            {
+                return Ok("Hello");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ErrorResponse
+                {
+                    StatusCode = 500,
+                    Message = ex.Message,
+                    StackTrace = ex.StackTrace
+                });
+            }
+        }
+
         [HttpPost]
         public async Task<ActionResult<ScheduleResponse>> ComputeSchedule(
             ScheduleRequest request)
@@ -39,8 +57,7 @@ namespace sts_scheduling.Controllers
         }
 
         [HttpPost("testing")]
-        public ActionResult<ScheduleResponse> Testing(
-            ScheduleRequest request)
+        public ActionResult<ScheduleResponse> Testing()
         {
             try
             {
@@ -72,6 +89,13 @@ namespace sts_scheduling.Controllers
                     StackTrace = ex.StackTrace
                 });
             }
+        }
+
+        [HttpPost("testing2")]
+        public ActionResult<ScheduleResponse> Testing2(
+            ScheduleRequest request)
+        {
+            return Ok("testing2");
         }
     }
 }
