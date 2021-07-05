@@ -16,7 +16,6 @@ namespace sts_scheduling.Utils
             var a = new ShiftAssignment
             {
                 Username = "effstaff1",
-                StoreId = 1,
                 SkillId = 3,
                 TimeStart = new DateTime(2021, 07, 05, 7, 0, 0),
                 TimeEnd = new DateTime(2021, 07, 05, 12, 0, 0)
@@ -24,7 +23,6 @@ namespace sts_scheduling.Utils
             var b = new ShiftAssignment
             {
                 Username = "effstaff2",
-                StoreId = 1,
                 SkillId = 4,
                 TimeStart = new DateTime(2021, 07, 05, 7, 0, 0),
                 TimeEnd = new DateTime(2021, 07, 05, 12, 0, 0)
@@ -32,7 +30,6 @@ namespace sts_scheduling.Utils
             var c = new ShiftAssignment
             {
                 Username = "effstaff3",
-                StoreId = 1,
                 SkillId = 2,
                 TimeStart = new DateTime(2021, 07, 05, 7, 0, 0),
                 TimeEnd = new DateTime(2021, 07, 05, 12, 0, 0)
@@ -40,7 +37,6 @@ namespace sts_scheduling.Utils
             var d = new ShiftAssignment
             {
                 Username = "effstaff4",
-                StoreId = 1,
                 SkillId = 1,
                 TimeStart = new DateTime(2021, 07, 05, 7, 0, 0),
                 TimeEnd = new DateTime(2021, 07, 05, 12, 0, 0)
