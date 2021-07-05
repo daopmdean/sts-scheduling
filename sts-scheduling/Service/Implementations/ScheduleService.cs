@@ -18,8 +18,8 @@ namespace sts_scheduling.Service.Implementations
         {
             SchedulingHandle handle = new()
             {
-                DataInput = requests.DataInput,
-                ConstraintData = requests.ConstraintData
+                //DataInput = requests.DataInput,
+                //ConstraintData = requests.ConstraintData
             };
             ScheduleResponse response = new();
 
