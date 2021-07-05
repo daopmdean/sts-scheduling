@@ -2,22 +2,26 @@
 {
     public class ConstraintData
     {
+        public ConstraintSpecific FulltimeConstraints { get; set; }
+        public ConstraintSpecific ParttimeConstraints { get; set; }
+        public ConstraintGeneral GeneralConstraints { get; set; }
+    }
+    public class ConstraintSpecific
+    {
         public int MinDayOff { get; set; }
         public int MaxDayOff { get; set; }
-        public int MinFTWorkingTimeOnWeek { get; set; }
-        public int MaxFTWorkingTimeOnWeek { get; set; }
-        public int MinPTWorkOnWeek { get; set; }
-        public int MaxPTWorkOnWeek { get; set; }
-        public int MinFTSessionDuration { get; set; }
-        public int MinPTSessionDuration { get; set; }
-        public int MaxFTSessionDuration { get; set; }
-        public int MaxPTSessionDuration { get; set; }
-        public int MaxFTWorkingTimeInDay { get; set; }
-        public int MaxPTWorkingTimeInDay { get; set; }
+        public int MiWorkingTimeOnWeek { get; set; }
+        public int MaxWorkingTimeOnWeek { get; set; }
+        public int MinSessionDuration { get; set; }
+        public int MaxSessionDuration { get; set; }
+        public int MinWorkingTimeInDay { get; set; }
+        public int MaxWorkingTimeInDay { get; set; }
         public int MaxNormalHour { get; set; }
-        public int TimeStart { get; set; }
-        public int TimeEnd { get; set; }
         public int MaxShiftInDay { get; set; }
+    }
+
+    public class ConstraintGeneral
+    {
         public int MinDistanceBetweenSession { get; set; }
     }
 }

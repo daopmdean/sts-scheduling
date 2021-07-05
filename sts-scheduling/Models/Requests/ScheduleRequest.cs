@@ -1,11 +1,17 @@
-﻿using sts_scheduling.Utils;
+﻿using sts_scheduling.Data;
+using sts_scheduling.Utils;
+using System.Collections.Generic;
 
 namespace sts_scheduling.Models.Requests
 {
     public class ScheduleRequest
     {
-        public DataInput DataInput { get; set; }
+        public List<StaffRequestData> Staffs { get; set; }
 
-        public ConstraintData ConstraintData { get; set; }
+        public List<Skill> Skills { get; set; }
+
+        public List<DemandDayRequest> Demands { get; set; }
+
+        public ConstraintData Constraints { get; set; }
     }
 }
