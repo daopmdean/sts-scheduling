@@ -10,7 +10,7 @@ namespace sts_scheduling.Utils
     {
         public List<Skill> Skills { get; set; }
         public Dictionary<TypeStaff, List<Staff>> StaffDic { get; set; }
-        public DemandByDay[] Demand { get; set; }
+        public DemandDay[] Demand { get; set; }
         public int NumDay { get; set; }
         public int NumTimeFrame { get; set; }
 
@@ -76,16 +76,16 @@ namespace sts_scheduling.Utils
             return ConvertDemandMatrix(Demand, NumDay, NumTimeFrame, Skills);
         }
 
-        public static int[,,] ConvertDemandMatrix(DemandByDay[] Demand, int TotalDay, int TotalTimeFrame, List<Skill> Skills)
+        public static int[,,] ConvertDemandMatrix(DemandDay[] Demand, int TotalDay, int TotalTimeFrame, List<Skill> Skills)
         {
             int[,,] demandMatrix = new int[TotalDay, Skills.Count, TotalTimeFrame];
             foreach (int day in Helper.Range(TotalDay))
             {
-                DemandByDay demandByDay = Demand.ToList().Find(e => e.Day == day);
+                DemandDay demandByDay = Demand.ToList().Find(e => e.Day == day);
                 if (demandByDay == null) continue;
                 foreach (int skill in Helper.Range(Skills.Count))
                 {
-                    DemandBySkill demandBySkill = demandByDay.DemandBySkills.ToList().Find(e => e.Skill.Equals(Skills.ElementAt(skill)));
+                    DemandSkill demandBySkill = demandByDay.DemandBySkills.ToList().Find(e => e.SkillId.Equals(Skills.ElementAt(skill)));
                     Demand[] demands = demandBySkill.Demands;
 
                     for (int i = 0; i < demands.Length; i++)
@@ -109,17 +109,17 @@ namespace sts_scheduling.Utils
 
             foreach (int staffIndex in Helper.Range(Staffs.Count))
             {
-                AvailableTime[] availables = Staffs.ElementAt(staffIndex).Availables;
+                AvailableDay[] availables = Staffs.ElementAt(staffIndex).Availables;
 
                 //flag  Day in availables
                 int i = 0;
 
                 foreach (int day in Helper.Range(TotalDay))
                 {
-                    if (i < availables.Length && availables[i].Day == day && availables[i].Sessions.Length != 0)
+                    if (i < availables.Length && availables[i].Day == day && availables[i].AvailableTimes.Length != 0)
                     {
                         int[] tmp = new int[TotalTimeFrame];
-                        var sessions = availables[i].Sessions;
+                        var sessions = availables[i].AvailableTimes;
                         for (int sessionIndex = 0; sessionIndex < sessions.Length; sessionIndex++)
                         {
                             int start = sessions[sessionIndex].Start;
@@ -163,14 +163,11 @@ namespace sts_scheduling.Utils
             {
                 foreach (int skill in Helper.Range(NumSkills))
                 {
-                    if (Staffs.ElementAt(staff).Skills.Contains(Skills.ElementAt(skill)))
+                    if (Staffs.ElementAt(staff).Skills.Any(skillStaff => skillStaff.Equals(Skills.ElementAt(skill))))
                     {
                         skillMatrixs[staff, skill] = 1;
                     }
-                    /*                    else
-                                        {
-                                            skillMatrixs[staff, skill] = 0;
-                                        }*/
+
                 }
             }
             return skillMatrixs;
