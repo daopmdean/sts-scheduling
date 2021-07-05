@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Google.OrTools.Sat;
 using sts_scheduling.Enums;
+using sts_scheduling.Models.Responses;
 
 namespace sts_scheduling.Utils
 {
@@ -12,7 +13,7 @@ namespace sts_scheduling.Utils
         public DataInput DataInput { get; set; }
         public ConstraintData ConstraintData { get; set; }
 
-        public void Solve(string filePath, int timeLimit)
+        public void Solve(ScheduleResponse response, int timeLimit)
         {
             //INIT
 
@@ -203,7 +204,6 @@ namespace sts_scheduling.Utils
 
                         objIntVars.Add(excessPanalty);
                         objIntCoeffs.Add(1);
-
                     }
                 }
             }
@@ -250,18 +250,17 @@ namespace sts_scheduling.Utils
 
             model.Minimize(objIntSum);
 
-            CpSolver solver = new CpSolver();
-            // Adds a time limit. Parameters are stored as strings in the solver.
-            solver.StringParameters = $"num_search_workers:8, max_time_in_seconds:{timeLimit}";
+            CpSolver solver = new CpSolver
+            {
+                // Adds a time limit. Parameters are stored as strings in the solver.
+                StringParameters = $"num_search_workers:8, max_time_in_seconds:{timeLimit}"
+            };
             CpSolverStatus status1 = solver.Solve(model);
 
-            using StreamWriter writer = new StreamWriter(filePath);
-            Console.SetOut(writer);
-            Console.WriteLine("Statistics");
-            Console.WriteLine($"  - status          : {status1}");
-            Console.WriteLine($"  - conflicts       : {solver.NumConflicts()}");
-            Console.WriteLine($"  - branches        : {solver.NumBranches()}");
-            Console.WriteLine($"  - wall time       : {solver.WallTime()}");
+            response.Status = status1;
+            response.Conflicts = solver.NumConflicts();
+            response.Branches = solver.NumBranches();
+            response.WallTime = solver.WallTime();
 
             //work_ft[s, p, d, t] = model1.NewBoolVar($"workFT{s}_{p}_{d}_{t}");
             if (status1 == CpSolverStatus.Optimal || status1 == CpSolverStatus.Feasible)
@@ -594,8 +593,6 @@ namespace sts_scheduling.Utils
                 }
                 model.AddBoolOr(temp).OnlyEnforceIf(check);
             }
-
-
         }
 
         /// <summary>

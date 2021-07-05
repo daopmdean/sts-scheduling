@@ -16,11 +16,16 @@ namespace sts_scheduling.Service.Implementations
         public async Task<ScheduleResponse> ComputeSchedule(
             ScheduleRequest requests)
         {
-            SchedulingHandle s = new();
+            SchedulingHandle handle = new()
+            {
+                DataInput = requests.DataInput,
+                ConstraintData = requests.ConstraintData
+            };
+            ScheduleResponse response = new();
 
-            var scheduleResponse = new ScheduleResponse();
-            scheduleResponse.Conflicts = 1;
-            return scheduleResponse;
+            handle.Solve(response, 120);
+
+            return response;
         }
     }
 }

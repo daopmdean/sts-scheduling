@@ -23,19 +23,18 @@ namespace sts_scheduling.Utils
 
         public int GetTotalStaff()
         {
-            return StaffDic[TypeStaff.FULL_TIME].Count + StaffDic[TypeStaff.PART_TIME].Count;
+            return StaffDic[TypeStaff.FULL_TIME].Count +
+                StaffDic[TypeStaff.PART_TIME].Count;
         }
-        public int GetNumSkill()
-        {
-            return Skills.Count;
-        }
+
         public int GetNumStaff(TypeStaff type)
         {
             return type switch
             {
                 TypeStaff.FULL_TIME => StaffDic[TypeStaff.FULL_TIME].Count,
                 TypeStaff.PART_TIME => StaffDic[TypeStaff.PART_TIME].Count,
-                TypeStaff.All => StaffDic[TypeStaff.FULL_TIME].Count + StaffDic[TypeStaff.PART_TIME].Count,
+                TypeStaff.All => StaffDic[TypeStaff.FULL_TIME].Count +
+                    StaffDic[TypeStaff.PART_TIME].Count,
                 _ => 0,
             };
         }
@@ -67,10 +66,16 @@ namespace sts_scheduling.Utils
             return null;
         }
 
+        public int GetNumSkill()
+        {
+            return Skills.Count;
+        }
+
         public int[,,] GetDemandMatrix()
         {
             return ConvertDemandMatrix(Demand, NumDay, NumTimeFrame, Skills);
         }
+
         public static int[,,] ConvertDemandMatrix(DemandByDay[] Demand, int TotalDay, int TotalTimeFrame, List<Skill> Skills)
         {
             int[,,] demandMatrix = new int[TotalDay, Skills.Count, TotalTimeFrame];
