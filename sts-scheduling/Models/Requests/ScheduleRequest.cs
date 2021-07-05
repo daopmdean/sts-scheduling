@@ -1,4 +1,4 @@
-﻿using sts_scheduling.Data;
+using sts_scheduling.Data;
 using sts_scheduling.Utils;
 using System.Collections.Generic;
 
