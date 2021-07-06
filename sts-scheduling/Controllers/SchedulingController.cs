@@ -19,9 +19,21 @@ namespace sts_scheduling.Controllers
         }
 
         [HttpGet]
-        public ActionResult Hello()
+        public ActionResult Get()
         {
-            return Ok("Hello");
+            try
+            {
+                return Ok("Hello");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ErrorResponse
+                {
+                    StatusCode = 500,
+                    Message = ex.Message,
+                    StackTrace = ex.StackTrace
+                });
+            }
         }
 
         [HttpPost]
@@ -31,8 +43,6 @@ namespace sts_scheduling.Controllers
             try
             {
                 return Ok(await _scheduleService.ComputeSchedule(request));
-
-
             }
             catch (Exception ex)
             {
@@ -55,7 +65,7 @@ namespace sts_scheduling.Controllers
                     Conflicts = 2,
                     Branches = 1,
                     WallTime = 10,
-                    //ShiftAssignments = Utils.Testing.GenerateShiftAssignments()
+                    ShiftAssignments = Utils.Testing.GenerateShiftAssignments()
                 };
                 return Ok(res);
             }
@@ -68,6 +78,13 @@ namespace sts_scheduling.Controllers
                     StackTrace = ex.StackTrace
                 });
             }
+        }
+
+        [HttpPost("testing2")]
+        public ActionResult<ScheduleResponse> Testing2(
+            ScheduleRequest request)
+        {
+            return Ok("testing2");
         }
     }
 }

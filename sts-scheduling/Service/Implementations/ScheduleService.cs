@@ -78,6 +78,7 @@ namespace sts_scheduling.Service.Implementations
                     }
                 },
                 ConstraintData = requests.Constraints
+
             };
 
             ScheduleResponse response = new();
