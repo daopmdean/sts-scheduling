@@ -53,7 +53,7 @@ namespace sts_scheduling.Controllers
                     Conflicts = 2,
                     Branches = 1,
                     WallTime = 10,
-                    //ShiftAssignments = Utils.Testing.GenerateShiftAssignments()
+                    ShiftAssignments = Utils.Testing.GenerateShiftAssignments()
                 };
                 return Ok(res);
             }
