@@ -5,8 +5,6 @@ namespace sts_scheduling.Models.Responses
     {
         public string Username { get; set; }
 
-        public int StoreId { get; set; }
-
         public int SkillId { get; set; }
 
         public DateTime TimeStart { get; set; }

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using sts_scheduling.Data;
 using sts_scheduling.Models.Requests;
 using sts_scheduling.Models.Responses;
 using sts_scheduling.Service.Interfaces;
@@ -16,10 +18,53 @@ namespace sts_scheduling.Service.Implementations
         public async Task<ScheduleResponse> ComputeSchedule(
             ScheduleRequest requests)
         {
+            int NumTimeFrames = 48;
+            //Get data
+
+            //Skill 
+            List<Skill> skills = requests.Skills;
+
+            //GET STAFF
+            List<Staff> PtStaffs = new List<Staff>();
+            List<Staff> FtStaffs = new List<Staff>();
+
+            List<StaffRequestData> staffRequests = requests.Staffs;
+            
+            for (int i = 0; i < staffRequests.Count; i++)
+            {
+
+                //Id To Map
+                int Id = staffRequests[i].TypeStaff == 1 ? PtStaffs.Count : FtStaffs.Count;
+
+                Staff staff = new()
+                {
+                    Id = Id,
+                    Username = staffRequests[i].Username,
+                    Skills = staffRequests[i].Skills.ToArray(),
+                    //convert AvailableTime
+                    Availables = (AvailableDay[])ConvertData.ConvertFromRequest(staffRequests[i].AvalailableDays, NumTimeFrames),
+                };
+
+                //Phân loại nhân viên
+                //PARTTIME
+                if (staffRequests[i].TypeStaff == 1)
+                {
+                    PtStaffs.Add(staff);
+                }
+                //FULLLTIME
+                else
+                {
+                    FtStaffs.Add(staff);
+                }
+            }
+
+            //convert Demand
+            DemandDay[] demands = (DemandDay[])ConvertData.ConvertFromRequest(requests.Demands, NumTimeFrames); 
+
             SchedulingHandle handle = new()
             {
-                DataInput = requests.DataInput,
-                ConstraintData = requests.ConstraintData
+                //DataInput = requests.DataInput,
+                //ConstraintData = requests.ConstraintData
             };
             ScheduleResponse response = new();
 

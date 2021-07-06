@@ -19,9 +19,21 @@ namespace sts_scheduling.Controllers
         }
 
         [HttpGet]
-        public ActionResult Hello()
+        public ActionResult Get()
         {
-            return Ok("Hello");
+            try
+            {
+                return Ok("Hello");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ErrorResponse
+                {
+                    StatusCode = 500,
+                    Message = ex.Message,
+                    StackTrace = ex.StackTrace
+                });
+            }
         }
 
         [HttpPost]
@@ -66,6 +78,13 @@ namespace sts_scheduling.Controllers
                     StackTrace = ex.StackTrace
                 });
             }
+        }
+
+        [HttpPost("testing2")]
+        public ActionResult<ScheduleResponse> Testing2(
+            ScheduleRequest request)
+        {
+            return Ok("testing2");
         }
     }
 }
