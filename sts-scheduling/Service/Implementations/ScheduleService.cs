@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using sts_scheduling.Data;
+using sts_scheduling.Enums;
 using sts_scheduling.Models.Requests;
 using sts_scheduling.Models.Responses;
 using sts_scheduling.Service.Interfaces;
@@ -59,12 +60,26 @@ namespace sts_scheduling.Service.Implementations
             }
 
             //convert Demand
-            DemandDay[] demands = (DemandDay[])ConvertData.ConvertFromRequest(requests.Demands, NumTimeFrames); 
+            DemandDay[] demands = (DemandDay[])ConvertData.ConvertFromRequest(requests.Demands, NumTimeFrames);
+
 
             SchedulingHandle handle = new()
             {
-                
+                DataInput = new DataInput()
+                {
+                    Demand = demands,
+                    NumDay = 7,
+                    NumTimeFrame = NumTimeFrames,
+                    Skills = skills,
+                    StaffDic = new Dictionary<TypeStaff, List<Staff>>()
+                    {
+                        [TypeStaff.FULL_TIME] = FtStaffs,
+                        [TypeStaff.PART_TIME] = PtStaffs
+                    }
+                },
+                ConstraintData = requests.Constraints
             };
+
             ScheduleResponse response = new();
 
             handle.Solve(response, 120);

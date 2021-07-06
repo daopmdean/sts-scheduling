@@ -20,17 +20,17 @@ namespace sts_scheduling.Data
             }
             if (obj.GetType() == typeof(SkillStaff))
             {
-                return this.Id == ((SkillStaff)obj).Id;
+                return Id == ((SkillStaff)obj).Id;
             }
 
             if (obj.GetType() ==  typeof(Skill))
             {
-                return this.Id == ((Skill)obj).Id;
+                return Id == ((Skill)obj).Id;
             }
 
             if (obj.GetType() == typeof(int))
             {
-                return this.Id == ((int)obj);
+                return Id == ((int)obj);
             }
 
             return false;

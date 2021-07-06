@@ -61,33 +61,33 @@ namespace sts_scheduling.Utils
             {
                 AddLimitWokingTimeByWeekConstraint(
                     model, work_ft, s, numPosition, numDays,
-                    numTimeFrames, ConstraintData.MinFTWorkingTimeOnWeek,
-                    ConstraintData.MaxFTWorkingTimeOnWeek);
+                    numTimeFrames, ConstraintData.FulltimeConstraints.MinWorkingTimeOnWeek,
+                    ConstraintData.FulltimeConstraints.MaxWorkingTimeOnWeek);
             }
 
             foreach (int s in Range(numPTStaffs))
             {
                 AddLimitWokingTimeByWeekConstraint(
                     model, work_pt, s, numPosition, numDays,
-                    numTimeFrames, ConstraintData.MinPTWorkOnWeek,
-                    ConstraintData.MaxPTWorkOnWeek);
+                    numTimeFrames, ConstraintData.ParttimeConstraints.MinWorkingTimeOnWeek,
+                    ConstraintData.ParttimeConstraints.MaxWorkingTimeOnWeek);
             }
 
-            //Constrains Ca làm việc có thể bắt đầu từ timeStart và kết thúc trước timeEnd
+       /*     //Constrains Ca làm việc có thể bắt đầu từ timeStart và kết thúc trước timeEnd
             AddDomainWokingTimeConstraints(model, work_ft, numFTStaffs, numPosition, numDays, numTimeFrames, ConstraintData.TimeStart, ConstraintData.TimeEnd);
-            AddDomainWokingTimeConstraints(model, work_pt, numPTStaffs, numPosition, numDays, numTimeFrames, ConstraintData.TimeStart, ConstraintData.TimeEnd);
+            AddDomainWokingTimeConstraints(model, work_pt, numPTStaffs, numPosition, numDays, numTimeFrames, ConstraintData.TimeStart, ConstraintData.TimeEnd);*/
 
             //Tổng thời gian làm việc 1 ngày < maxHoursInDay
-            AddMaxWorkingTimeInDayConstraints(model, work_ft, numFTStaffs, numPosition, numDays, numTimeFrames, ConstraintData.MaxFTWorkingTimeInDay);
-            AddMaxWorkingTimeInDayConstraints(model, work_pt, numPTStaffs, numPosition, numDays, numTimeFrames, ConstraintData.MaxPTWorkingTimeInDay);
+            AddMaxWorkingTimeInDayConstraints(model, work_ft, numFTStaffs, numPosition, numDays, numTimeFrames, ConstraintData.FulltimeConstraints.MaxWorkingTimeInDay);
+            AddMaxWorkingTimeInDayConstraints(model, work_pt, numPTStaffs, numPosition, numDays, numTimeFrames, ConstraintData.ParttimeConstraints.MaxWorkingTimeInDay);
 
             //Mỗi nhân viên chỉ làm việc tại 1 ngày 1 vị trí 1 thời gian:
             AddUniqueWorkConstraint(model, work_ft, numFTStaffs, numPosition, numDays, numTimeFrames);
             AddUniqueWorkConstraint(model, work_pt, numPTStaffs, numPosition, numDays, numTimeFrames);
 
             //Nhân viên Fulltime được nghỉ ít nhất n ngày trong tuần
-            AddMinDayOffConstrains(model, work_ft, numFTStaffs, numPosition, numDays, numTimeFrames, ConstraintData.MinDayOff, ConstraintData.MaxDayOff);
-            AddMinDayOffConstrains(model, work_pt, numPTStaffs, numPosition, numDays, numTimeFrames, ConstraintData.MinDayOff, ConstraintData.MaxDayOff);
+            AddMinDayOffConstrains(model, work_ft, numFTStaffs, numPosition, numDays, numTimeFrames, ConstraintData.FulltimeConstraints.MinDayOff, ConstraintData.FulltimeConstraints.MaxDayOff);
+            AddMinDayOffConstrains(model, work_pt, numPTStaffs, numPosition, numDays, numTimeFrames, ConstraintData.ParttimeConstraints.MinDayOff, ConstraintData.ParttimeConstraints.MaxDayOff);
 
             //Nhân viên e chỉ có thể làm việc tại các vị trí mà người đó đã đăng kí sẵn trong hợp đồng
             AddWorkBySkillConstraint(model, work_ft, numFTStaffs, numPosition, numDays, numTimeFrames, skillFTStaffs);
@@ -100,7 +100,7 @@ namespace sts_scheduling.Utils
             {
                 foreach (int d in Range(numDays))
                 {
-                    var countShifts_Day = model.NewIntVar(0, ConstraintData.MaxShiftInDay * 2, $"count_shift_day(day={d},staff={s}");
+                    var countShifts_Day = model.NewIntVar(0, ConstraintData.FulltimeConstraints.MaxShiftInDay * 2, $"count_shift_day(day={d},staff={s}");
                     var countShift_Pos_s = new IntVar[numPosition];
                     foreach (int p in Range(numPosition))
                     {
@@ -112,12 +112,12 @@ namespace sts_scheduling.Utils
 
                         //đếm số ca làm việc = countShift_Pos/2
                         //countShift_Pos = số ca làm việc * 2
-                        var countShift_Pos = model.NewIntVar(0, ConstraintData.MaxShiftInDay * 2, $"count_shift_pos");
+                        var countShift_Pos = model.NewIntVar(0, ConstraintData.FulltimeConstraints.MaxShiftInDay * 2, $"count_shift_pos");
                         countShift_Pos_s[p] = countShift_Pos;
 
                         //xác định có làm việc không tại day d, staff s, pos p
                         var isDontWortAt = model.NewBoolVar($"prod");
-                        AddSequenceConstraint(model, works, ConstraintData.MaxShiftInDay, ConstraintData.MinFTSessionDuration, ConstraintData.MaxFTSessionDuration, numTimeFrames, countShift_Pos, isDontWortAt);
+                        AddSequenceConstraint(model, works, ConstraintData.FulltimeConstraints.MaxShiftInDay, ConstraintData.FulltimeConstraints.MinSessionDuration, ConstraintData.FulltimeConstraints.MaxSessionDuration, numTimeFrames, countShift_Pos, isDontWortAt);
 
                     }
                     model.Add(countShifts_Day == LinearExpr.Sum(countShift_Pos_s));
@@ -128,7 +128,7 @@ namespace sts_scheduling.Utils
             {
                 foreach (int d in Range(numDays))
                 {
-                    var countShifts_Day = model.NewIntVar(0, ConstraintData.MaxShiftInDay * 2, $"count_shift_day(day={d},staff={s}");
+                    var countShifts_Day = model.NewIntVar(0, ConstraintData.ParttimeConstraints.MaxShiftInDay * 2, $"count_shift_day(day={d},staff={s}");
                     var countShift_Pos_s = new IntVar[numPosition];
                     foreach (int p in Range(numPosition))
                     {
@@ -140,12 +140,12 @@ namespace sts_scheduling.Utils
 
                         //đếm số ca làm việc = countShift_Pos/2
                         //countShift_Pos = số ca làm việc * 2
-                        var countShift_Pos = model.NewIntVar(0, ConstraintData.MaxShiftInDay * 2, $"count_shift_pos");
+                        var countShift_Pos = model.NewIntVar(0, ConstraintData.ParttimeConstraints.MaxShiftInDay * 2, $"count_shift_pos");
                         countShift_Pos_s[p] = countShift_Pos;
 
                         //xác định có làm việc không tại day d, staff s, pos p
                         var isDontWortAt = model.NewBoolVar($"prod");
-                        AddSequenceConstraint(model, works, ConstraintData.MaxShiftInDay, ConstraintData.MinPTSessionDuration, ConstraintData.MaxPTSessionDuration, numTimeFrames, countShift_Pos, isDontWortAt);
+                        AddSequenceConstraint(model, works, ConstraintData.ParttimeConstraints.MaxShiftInDay, ConstraintData.ParttimeConstraints.MinSessionDuration, ConstraintData.ParttimeConstraints.MaxSessionDuration, numTimeFrames, countShift_Pos, isDontWortAt);
 
                     }
                     model.Add(countShifts_Day == LinearExpr.Sum(countShift_Pos_s));
@@ -158,13 +158,11 @@ namespace sts_scheduling.Utils
             {
                 foreach (int t in Range(numTimeFrames))
                 {
-                    if (t < ConstraintData.TimeStart || t > ConstraintData.TimeEnd)
-                    {
-                        continue;
-                    }
 
                     foreach (int p in Range(numPosition))
                     {
+
+
                         var works = new List<IntVar>();
 
                         foreach (int s in Range(numFTStaffs))
@@ -186,6 +184,11 @@ namespace sts_scheduling.Utils
 
                         var worked = model.NewIntVar(1, totalStaff, "");
                         model.Add(LinearExpr.Sum(works) == worked);
+                        if (demands[d, p, t] == 0)
+                        {
+                            model.Add(worked == 0);
+                            continue;
+                        }
 
                         var name = $"excessPanalty_demand(shift={t}, position={p}, day={d}";
                         var excessPanalty = model.NewIntVar(0, 100, name);
