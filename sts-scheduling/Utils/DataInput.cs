@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using sts_scheduling.Data;
 using sts_scheduling.Enums;
@@ -43,10 +44,14 @@ namespace sts_scheduling.Utils
         {
             if (type == TypeStaff.FULL_TIME)
             {
+              //  using StreamWriter writer = new StreamWriter("D:\\STS\\InputCheck\\demandServerFT.txt");
+             //   Console.SetOut(writer);
                 return ConvertSkillMatrix(StaffDic[TypeStaff.FULL_TIME], Skills);
             }
             else if (type == TypeStaff.PART_TIME)
             {
+             //   using StreamWriter writer = new StreamWriter("D:\\STS\\InputCheck\\demandServerPT.txt");
+              //  Console.SetOut(writer);
                 return ConvertSkillMatrix(StaffDic[TypeStaff.PART_TIME], Skills);
             }
 
@@ -57,10 +62,14 @@ namespace sts_scheduling.Utils
         {
             if (type == TypeStaff.FULL_TIME)
             {
+               // using StreamWriter writer = new StreamWriter("D:\\STS\\InputCheck\\AvaiServerFT.txt");
+               // Console.SetOut(writer);
                 return ConvertAvailableMatrix(StaffDic[TypeStaff.FULL_TIME], NumDay, NumTimeFrame);
             }
             else if (type == TypeStaff.PART_TIME)
             {
+              //  using StreamWriter writer = new StreamWriter("D:\\STS\\InputCheck\\AvaiServerPT.txt");
+              //  Console.SetOut(writer);
                 return ConvertAvailableMatrix(StaffDic[TypeStaff.PART_TIME], NumDay, NumTimeFrame);
             }
             return null;
@@ -85,7 +94,7 @@ namespace sts_scheduling.Utils
                 if (demandByDay == null) continue;
                 foreach (int skill in Helper.Range(Skills.Count))
                 {
-                    DemandSkill demandBySkill = demandByDay.DemandBySkills.ToList().Find(e => e.SkillId.Equals(Skills.ElementAt(skill)));
+                    DemandSkill demandBySkill = demandByDay.DemandBySkills.ToList().Find(e => e.SkillId == Skills.ElementAt(skill).Id);
                     Demand[] demands = demandBySkill.Demands;
 
                     for (int i = 0; i < demands.Length; i++)
@@ -98,6 +107,21 @@ namespace sts_scheduling.Utils
                             demandMatrix[day, skill, timeIndex] = quality;
                         }
                     }
+                }
+            }
+
+            
+            foreach (int day in Helper.Range(TotalDay))
+            {
+                Console.WriteLine("Day " + day);
+                foreach (int skill in Helper.Range(Skills.Count))
+                {
+                    Console.WriteLine("Skill " + skill);
+                    foreach (int t in Helper.Range(TotalTimeFrame))
+                    {
+                        Console.Write(demandMatrix[day, skill, t]);
+                    }
+                    Console.WriteLine();
                 }
             }
             return demandMatrix;
@@ -135,22 +159,22 @@ namespace sts_scheduling.Utils
                 }
             }
 
-            /*            foreach (int staffIndex in Helper.Range(Staffs.Count))
-                        {
-                            Console.WriteLine("Staff " + Staffs.ElementAt(staffIndex).Name);
-                            foreach (int day in Helper.Range(TotalDay))
-                            {
-                                Console.WriteLine("Day " + day);
-                                foreach (int t in Helper.Range(TotalTimeFrame))
-                                {
+            foreach (int staffIndex in Helper.Range(Staffs.Count))
+            {
+                Console.WriteLine("Staff " + staffIndex);
+                foreach (int day in Helper.Range(TotalDay))
+                {
+                    Console.WriteLine("Day " + day);
+                    foreach (int t in Helper.Range(TotalTimeFrame))
+                    {
 
-                                    Console.Write(availableMatrix[staffIndex, day, t] + ", ");
+                        Console.Write(availableMatrix[staffIndex, day, t]);
 
-                                }
-                                Console.WriteLine();
+                    }
+                    Console.WriteLine();
 
-                            }
-                        }*/
+                }
+            }
             return availableMatrix;
         }
 
@@ -170,6 +194,18 @@ namespace sts_scheduling.Utils
 
                 }
             }
+
+            
+            foreach (int s in Helper.Range(NumStaffs))
+            {
+                Console.WriteLine("staff " + s);
+                foreach (int skill in Helper.Range(Skills.Count))
+                {
+                    Console.Write(skillMatrixs[s, skill]);
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine();
             return skillMatrixs;
         }
     }

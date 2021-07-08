@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Google.OrTools.Sat;
+using sts_scheduling.Data;
 using sts_scheduling.Enums;
 using sts_scheduling.Models.Responses;
 
@@ -12,8 +13,10 @@ namespace sts_scheduling.Utils
     {
         public DataInput DataInput { get; set; }
         public ConstraintData ConstraintData { get; set; }
+        public DateTime DateStart = new(2021, 7, 5);
+        private const int UNASSIGNED = -1;
 
-        public void Solve(ScheduleResponse response, int timeLimit)
+        public void Solve(ref ScheduleResponse response, int timeLimit)
         {
             //INIT
 
@@ -73,9 +76,9 @@ namespace sts_scheduling.Utils
                     ConstraintData.ParttimeConstraints.MaxWorkingTimeOnWeek);
             }
 
-       /*     //Constrains Ca làm việc có thể bắt đầu từ timeStart và kết thúc trước timeEnd
-            AddDomainWokingTimeConstraints(model, work_ft, numFTStaffs, numPosition, numDays, numTimeFrames, ConstraintData.TimeStart, ConstraintData.TimeEnd);
-            AddDomainWokingTimeConstraints(model, work_pt, numPTStaffs, numPosition, numDays, numTimeFrames, ConstraintData.TimeStart, ConstraintData.TimeEnd);*/
+            /*     //Constrains Ca làm việc có thể bắt đầu từ timeStart và kết thúc trước timeEnd
+                 AddDomainWokingTimeConstraints(model, work_ft, numFTStaffs, numPosition, numDays, numTimeFrames, ConstraintData.TimeStart, ConstraintData.TimeEnd);
+                 AddDomainWokingTimeConstraints(model, work_pt, numPTStaffs, numPosition, numDays, numTimeFrames, ConstraintData.TimeStart, ConstraintData.TimeEnd);*/
 
             //Tổng thời gian làm việc 1 ngày < maxHoursInDay
             AddMaxWorkingTimeInDayConstraints(model, work_ft, numFTStaffs, numPosition, numDays, numTimeFrames, ConstraintData.FulltimeConstraints.MaxWorkingTimeInDay);
@@ -182,31 +185,35 @@ namespace sts_scheduling.Utils
 
                         //đếm số nhân viên làm việc tại khoảng thời gian t ngày d
 
-                        var worked = model.NewIntVar(1, totalStaff, "");
-                        model.Add(LinearExpr.Sum(works) == worked);
-                        if (demands[d, p, t] == 0)
+                        model.Add(LinearExpr.Sum(works) == demand);
+                        /*if (demands[d, p, t] == 0)
                         {
-                            model.Add(worked == 0);
-                            continue;
+                            model.Add(LinearExpr.Sum(works) == 0);                 
                         }
+                        else
+                        {
+                            var worked = model.NewIntVar(1, totalStaff, "");
+                            model.Add(LinearExpr.Sum(works) == worked);
+                            var name = $"excessPanalty_demand(shift={t}, position={p}, day={d}";
+                            var excessPanalty = model.NewIntVar(0, 100, name);
+                            var excess = model.NewIntVar(-totalStaff, totalStaff, "excess");
+                            var excessAbs = model.NewIntVar(0, totalStaff, "excessAbs");
 
-                        var name = $"excessPanalty_demand(shift={t}, position={p}, day={d}";
-                        var excessPanalty = model.NewIntVar(0, 100, name);
-                        var excess = model.NewIntVar(-totalStaff, totalStaff, "excess");
-                        var excessAbs = model.NewIntVar(0, totalStaff, "excessAbs");
+                            //hệ số xác định tình trạng ca là under / over
+                            var a = model.NewIntVar(0, totalStaff, "alpha");
+                            // b = reality - demand
+                            // a = (b + |b|)/2 => a = 0 if under || a = b if over
+                            // excess panalty = a*overPanalty + (|b| - a)*underPanalty
+                            model.Add(excess == worked - demand);
+                            model.AddAbsEquality(excessAbs, excess);
+                            model.Add(2 * a == (excess + excessAbs));
+                            model.Add(excessPanalty == a * overCoverPenalty + (excessAbs - a) * underCoverPenalty);
 
-                        //hệ số xác định tình trạng ca là under / over
-                        var a = model.NewIntVar(0, totalStaff, "alpha");
-                        // b = reality - demand
-                        // a = (b + |b|)/2 => a = 0 if under || a = b if over
-                        // excess panalty = a*overPanalty + (|b| - a)*underPanalty
-                        model.Add(excess == worked - demand);
-                        model.AddAbsEquality(excessAbs, excess);
-                        model.Add(2 * a == (excess + excessAbs));
-                        model.Add(excessPanalty == a * overCoverPenalty + (excessAbs - a) * underCoverPenalty);
+                            objIntVars.Add(excessPanalty);
+                            objIntCoeffs.Add(1);
+                        }*/
 
-                        objIntVars.Add(excessPanalty);
-                        objIntCoeffs.Add(1);
+
                     }
                 }
             }
@@ -258,6 +265,7 @@ namespace sts_scheduling.Utils
                 // Adds a time limit. Parameters are stored as strings in the solver.
                 StringParameters = $"num_search_workers:8, max_time_in_seconds:{timeLimit}"
             };
+
             CpSolverStatus status1 = solver.Solve(model);
 
             response.Status = status1;
@@ -268,59 +276,102 @@ namespace sts_scheduling.Utils
             //work_ft[s, p, d, t] = model1.NewBoolVar($"workFT{s}_{p}_{d}_{t}");
             if (status1 == CpSolverStatus.Optimal || status1 == CpSolverStatus.Feasible)
             {
-                foreach (int s in Range(numFTStaffs))
-                {
-                    //Console.WriteLine($"Staff {s}:");
-                    foreach (int d in Range(numDays))
-                    {
-                        // Console.WriteLine($"\tDay {d}:");
-                        foreach (int p in Range(numPosition))
-                        {
 
-                            // Console.Write($",,");
-                            foreach (int t in Range(numTimeFrames))
-                            {
-                                // Console.Write($"{solver.Value(work_ft[s, p, d, t])},");
-                                sch_ft[s, p, d, t] = (int)solver.Value(work_ft[s, p, d, t]);
-                            }
-                            //Console.WriteLine();
-                        }
-                    }
-                }
 
                 foreach (int d in Range(numDays))
                 {
-                    Console.WriteLine($"\tDay {d}:");
+
                     foreach (int p in Range(numPosition))
                     {
-                        Console.WriteLine($"Skill {DataInput.Skills.Find(e => e.Id == p).Name}:");
 
-                        foreach (int s in Range(numFTStaffs))
+
+                        foreach (int t in Range(numTimeFrames))
                         {
-                            Console.WriteLine($"Staff {s}:");
-                            Console.Write($",,");
-                            foreach (int t in Range(numTimeFrames))
+                            foreach (int s in Range(numFTStaffs))
                             {
-                                Console.Write($"{sch_ft[s, p, d, t]},");
-                                //sch_ft[s, p, d, t] = (int)solver.Value(work_ft[s, p, d, t]);
+                                sch_ft[s, p, d, t] = (int)solver.Value(work_ft[s, p, d, t]);
                             }
-                            Console.WriteLine();
-                        }
 
-                        foreach (int s in Range(numPTStaffs))
-                        {
-                            Console.WriteLine($"Staff {s + numFTStaffs}/ s:");
-                            Console.Write($",,");
-                            foreach (int t in Range(numTimeFrames))
+                            foreach (int s in Range(numPTStaffs))
                             {
-                                Console.Write($"{solver.Value(work_pt[s, p, d, t])},");
                                 sch_pt[s, p, d, t] = (int)solver.Value(work_pt[s, p, d, t]);
                             }
-                            Console.WriteLine();
+                        }
+
+                    }
+                }
+
+                //sch_pt[s, p, d, t] = (int)solver.Value(work_pt[s, p, d, t]);
+                List<ShiftAssignment> shifts = new();
+                shifts.AddRange(ConvertToShiftAssignment(sch_ft, numPosition, numDays, numTimeFrames, numFTStaffs,
+                                           DataInput.StaffDic[TypeStaff.FULL_TIME], DataInput.Skills));
+                shifts.AddRange(ConvertToShiftAssignment(sch_pt, numPosition, numDays, numTimeFrames, numPTStaffs,
+                                            DataInput.StaffDic[TypeStaff.PART_TIME], DataInput.Skills));
+                response.ShiftAssignments = shifts;
+            }
+        }
+
+        private List<ShiftAssignment> ConvertToShiftAssignment(int[,,,] sch, int numPosition, int numDays,
+            int numTimeFrames, int numStaffs, List<Staff> staffs, List<Skill> skills)
+        {
+            List<ShiftAssignment> shifts = new();
+            foreach (int d in Range(numDays))
+            {
+
+                foreach (int p in Range(numPosition))
+                {
+
+                    foreach (int s in Range(numStaffs))
+                    {
+                        var start = UNASSIGNED;
+                        var end = UNASSIGNED;
+                        foreach (int t in Range(numTimeFrames))
+                        {
+                            if (sch[s, p, d, t] == 1 && start == UNASSIGNED)
+                            {
+                                start = t;
+                            }
+
+                            if ((sch[s, p, d, t] == 0 || t == numTimeFrames - 1) && t != 0 && start != UNASSIGNED)
+                            {
+                                end = t - 1;
+                            }
+                            if (start < end)
+                            {
+                                //new shift 
+                                DateTime StartTime = DateStart.AddDays(d).AddHours((double)start / 2);
+                                DateTime EndTime;
+                                if (end == numTimeFrames - 1)
+                                {
+                                    EndTime = DateStart.AddDays(d).AddHours((double)end / 2).AddMinutes(29);
+                                } 
+                                else
+                                { 
+                                    EndTime = DateStart.AddDays(d).AddHours((double)(end + 1) / 2);
+                                }
+                               
+                                ShiftAssignment shift = new()
+                                {
+                                    SkillId = skills[p].Id,
+                                    Username = staffs[s].Username,
+                                    SkillName = skills[p].Name,
+                                    TimeStart = StartTime,
+                                    TimeEnd = EndTime
+
+                                };
+                                shifts.Add(shift);
+                                //reset
+                                start = UNASSIGNED;
+                                end = UNASSIGNED;
+                            }
+
+
                         }
                     }
                 }
             }
+
+            return shifts;
         }
 
         private static IntVar[,,,] NewBoolVars(CpModel model, string namePrefix,
@@ -469,6 +520,7 @@ namespace sts_scheduling.Utils
                 }
             }
         }
+
         private static void AddMaxWorkingTimeInDayConstraints(CpModel model, IntVar[,,,] work_sch,
             int numStaffs, int numPosition, int numDays,
             int numTimeFrames, int maxWorkingTimeInDay)

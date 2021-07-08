@@ -13,7 +13,7 @@ namespace sts_scheduling.Utils
         {
             List<ShiftAssignment> list = new();
 
-            var a = new ShiftAssignment
+            /*var a = new ShiftAssignment
             {
                 Username = "effstaff1",
                 StoreId = 1,
@@ -44,9 +44,9 @@ namespace sts_scheduling.Utils
                 SkillId = 1,
                 TimeStart = new DateTime(2021, 07, 05, 7, 0, 0),
                 TimeEnd = new DateTime(2021, 07, 05, 12, 0, 0)
-            };
+            };*/
 
-            list.AddRange(new ShiftAssignment[] { a, b, c, d });
+        //    list.AddRange(new ShiftAssignment[] { a, b, c, d });
 
             return list;
         }

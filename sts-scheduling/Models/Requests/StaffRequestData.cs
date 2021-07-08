@@ -14,7 +14,6 @@ namespace sts_scheduling.Models.Requests
         public List<AvalailableDayRequest> AvalailableDays { get; set; }
     }
 
-
     public class AvalailableDayRequest
     {
         public int Day { get; set; }

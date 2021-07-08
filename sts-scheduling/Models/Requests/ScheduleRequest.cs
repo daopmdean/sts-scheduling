@@ -12,6 +12,6 @@ namespace sts_scheduling.Models.Requests
 
         public List<DemandDayRequest> Demands { get; set; }
 
-        public ConstraintData Constraints { get; set; }
+        public ConstraintDataRequest Constraints { get; set; }
     }
 }

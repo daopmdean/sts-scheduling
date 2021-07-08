@@ -77,13 +77,13 @@ namespace sts_scheduling.Service.Implementations
                         [TypeStaff.PART_TIME] = PtStaffs
                     }
                 },
-                ConstraintData = requests.Constraints
+                ConstraintData = ConvertData.ConvertFromRequest(requests.Constraints)
 
             };
 
             ScheduleResponse response = new();
 
-            handle.Solve(response, 120);
+            handle.Solve(ref response, 120);
 
             return response;
         }
