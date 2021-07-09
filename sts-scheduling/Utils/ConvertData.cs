@@ -19,13 +19,13 @@ namespace sts_scheduling.Utils
             {
                 DemandDay demandDay = new()
                 {
-                  Day = demandDayRequest.Day,
-                  DemandBySkills = ConvertFromRequest(demandDayRequest.DemandBySkills,NumTimeFrames).ToArray()
+                    Day = demandDayRequest.Day,
+                    DemandBySkills = ConvertFromRequest(demandDayRequest.DemandBySkills, NumTimeFrames).ToArray()
                 };
                 result.Add(demandDay);
             }
 
-            return result;
+            return result.ToArray();
         }
 
         public static IEnumerable<DemandSkill> ConvertFromRequest(IEnumerable<DemandSkillRequest> demandSkillRequests, int NumTimeFrames)
@@ -36,8 +36,8 @@ namespace sts_scheduling.Utils
             {
                 DemandSkill demandDay = new()
                 {
-                   SkillId = demandDayRequest.SkillId,
-                   Demands = ConvertFromRequest(demandDayRequest.Demands, NumTimeFrames).ToArray()
+                    SkillId = demandDayRequest.SkillId,
+                    Demands = ConvertFromRequest(demandDayRequest.Demands, NumTimeFrames).ToArray()
                 };
                 result.Add(demandDay);
             }
@@ -54,7 +54,7 @@ namespace sts_scheduling.Utils
                 Session = new Session
                 {
                     Start = ConvertDateTimeToIndexTime(demandDayRequest.Start, NumTimeFrames),
-                    End = ConvertDateTimeToIndexTime(demandDayRequest.End, NumTimeFrames)
+                    End = ConvertDateTimeToIndexTime(demandDayRequest.End, NumTimeFrames) - 1
                 }
 
             }).ToList();
@@ -63,11 +63,11 @@ namespace sts_scheduling.Utils
         }
 
 
-        public static IEnumerable<AvailableDay> ConvertFromRequest(IEnumerable<AvalailableDayRequest> avalailableDays , int NumTimeFrames)
+        public static IEnumerable<AvailableDay> ConvertFromRequest(IEnumerable<AvalailableDayRequest> avalailableDays, int NumTimeFrames)
         {
             List<AvailableDay> result = new();
 
-            foreach(AvalailableDayRequest avalailableDayRequest in avalailableDays)
+            foreach (AvalailableDayRequest avalailableDayRequest in avalailableDays)
             {
                 AvailableDay availableDay = new()
                 {
@@ -84,7 +84,7 @@ namespace sts_scheduling.Utils
         {
             List<Session> availableTimes = new List<Session>();
 
-            foreach(AvailableTimeRequest availableTime in availableTimeRequests)
+            foreach (AvailableTimeRequest availableTime in availableTimeRequests)
             {
                 Session session = ConvertAvailableTimeRequestToSession(availableTime, NumTimeFrames);
                 availableTimes.Add(session);
@@ -96,18 +96,67 @@ namespace sts_scheduling.Utils
         public static Session ConvertAvailableTimeRequestToSession(AvailableTimeRequest availableTime, int NumTimeFrames)
         {
             return new Session
-                {
-                    Start = ConvertDateTimeToIndexTime(availableTime.Start, NumTimeFrames),
-                    End = ConvertDateTimeToIndexTime(availableTime.End, NumTimeFrames)
-                };
+            {
+                Start = ConvertDateTimeToIndexTime(availableTime.Start, NumTimeFrames),
+                End = ConvertDateTimeToIndexTime(availableTime.End, NumTimeFrames) - 1
+            };
         }
 
         public static int ConvertDateTimeToIndexTime(DateTime dateTime, int NumTimeFrames)
         {
-            return (int)((dateTime.Hour + Math.Ceiling((double)dateTime.Minute / 60))
-                                                * ((double)NumTimeFrameNormal / NumTimeFrames));
+            double minuteToIndex = 0;
+            if(dateTime.Minute > 5)
+            {
+                minuteToIndex = dateTime.Minute <= 30 ? 0.5 : 1;
+            }
+            return (int)((double)(dateTime.Hour + minuteToIndex)
+                                                * ((double)NumTimeFrames / NumTimeFrameNormal));
         }
 
+        public static ConstraintData ConvertFromRequest(ConstraintDataRequest constraintDataRequest)
+        {
+            ConstraintData constraintData = new ConstraintData()
+            {
+                MinDistanceBetweenSession = constraintDataRequest.MinDistanceBetweenSession*2,
+                FulltimeConstraints = new()
+                {
+                    MinDayOff = constraintDataRequest.FulltimeConstraints.MinDayOff,
+                    MaxDayOff = constraintDataRequest.FulltimeConstraints.MaxDayOff,
+
+                    MinWorkingTimeOnWeek = (int)constraintDataRequest.FulltimeConstraints.MinHoursPerWeek * 2,
+                    MaxWorkingTimeOnWeek = (int)constraintDataRequest.FulltimeConstraints.MaxHoursPerWeek * 2,
+
+                    MinSessionDuration = (int)constraintDataRequest.FulltimeConstraints.MinShiftDuration * 2,
+                    MaxSessionDuration = (int)constraintDataRequest.FulltimeConstraints.MaxShiftDuration *2,
+
+                    MinWorkingTimeInDay = (int)constraintDataRequest.FulltimeConstraints.MinHoursPerDay * 2,
+                    MaxWorkingTimeInDay = (int)constraintDataRequest.FulltimeConstraints.MaxHoursPerDay * 2,
+
+                    //unuse
+                    MaxNormalHour = constraintDataRequest.FulltimeConstraints.MaxNormalHour * 2,
+                    MaxShiftInDay = constraintDataRequest.FulltimeConstraints.MaxShiftPerDay,
+                },
+                ParttimeConstraints = new()
+                {
+                    MinDayOff = constraintDataRequest.ParttimeConstraints.MinDayOff,
+                    MaxDayOff = constraintDataRequest.ParttimeConstraints.MaxDayOff,
+
+                    MinWorkingTimeOnWeek = (int)constraintDataRequest.ParttimeConstraints.MinHoursPerWeek * 2,
+                    MaxWorkingTimeOnWeek = (int)constraintDataRequest.ParttimeConstraints.MaxHoursPerWeek * 2,
+
+                    MinSessionDuration = (int)constraintDataRequest.ParttimeConstraints.MinShiftDuration * 2,
+                    MaxSessionDuration = (int)constraintDataRequest.ParttimeConstraints.MaxShiftDuration * 2,
+
+                    MinWorkingTimeInDay = (int)constraintDataRequest.ParttimeConstraints.MinHoursPerDay * 2,
+                    MaxWorkingTimeInDay = (int)constraintDataRequest.ParttimeConstraints.MaxHoursPerDay * 2,
+                    //unuse
+                    MaxNormalHour = constraintDataRequest.ParttimeConstraints.MaxNormalHour*2,
+                    MaxShiftInDay = constraintDataRequest.ParttimeConstraints.MaxShiftPerDay,
+                }
+            };
+
+            return constraintData;
+        }
 
     }
 }

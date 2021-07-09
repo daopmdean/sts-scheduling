@@ -7,7 +7,7 @@ namespace sts_scheduling.Data
 {
     public class SkillStaff
     {
-        public int Id { get; set; }
+        public int SkillId { get; set; }
         public int Level { get; set; }
 
         // override object.Equals
@@ -20,17 +20,17 @@ namespace sts_scheduling.Data
             }
             if (obj.GetType() == typeof(SkillStaff))
             {
-                return this.Id == ((SkillStaff)obj).Id;
+                return SkillId == ((SkillStaff)obj).SkillId;
             }
 
             if (obj.GetType() ==  typeof(Skill))
             {
-                return this.Id == ((Skill)obj).Id;
+                return SkillId == ((Skill)obj).Id;
             }
 
             if (obj.GetType() == typeof(int))
             {
-                return this.Id == ((int)obj);
+                return SkillId == ((int)obj);
             }
 
             return false;

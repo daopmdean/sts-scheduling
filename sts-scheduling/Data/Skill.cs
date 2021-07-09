@@ -15,7 +15,7 @@ namespace sts_scheduling.Data
             }
             if (obj.GetType() == typeof(SkillStaff))
             {
-                return this.Id == ((SkillStaff)obj).Id;
+                return this.Id == ((SkillStaff)obj).SkillId;
             }
 
             if (obj.GetType() == typeof(Skill))
