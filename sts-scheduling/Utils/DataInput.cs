@@ -95,6 +95,8 @@ namespace sts_scheduling.Utils
                 foreach (int skill in Helper.Range(Skills.Count))
                 {
                     DemandSkill demandBySkill = demandByDay.DemandBySkills.ToList().Find(e => e.SkillId == Skills.ElementAt(skill).Id);
+
+                    if (demandBySkill == null || demandBySkill.Demands==null) continue;
                     Demand[] demands = demandBySkill.Demands;
 
                     for (int i = 0; i < demands.Length; i++)
@@ -110,7 +112,9 @@ namespace sts_scheduling.Utils
                 }
             }
 
-            
+          /*  using StreamWriter writer = new("D:\\STS\\InputCheck\\demandServer1.txt");
+
+           Console.SetOut(writer);
             foreach (int day in Helper.Range(TotalDay))
             {
                 Console.WriteLine("Day " + day);
@@ -123,7 +127,8 @@ namespace sts_scheduling.Utils
                     }
                     Console.WriteLine();
                 }
-            }
+            }*/
+
             return demandMatrix;
         }
 
