@@ -30,5 +30,10 @@ namespace sts_scheduling.Data
 
             return false;
         }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }
