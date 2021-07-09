@@ -332,16 +332,16 @@ namespace sts_scheduling.Utils
                                 start = t;
                             }
 
-                            if ((sch[s, p, d, t] == 0 || t == numTimeFrames - 1) && t != 0 && start != UNASSIGNED)
+                            if ((t == numTimeFrames - 1 || sch[s, p, d, t+1] == 0) && t != 0 && start != UNASSIGNED)
                             {
-                                end = t - 1;
+                                end = t;
                             }
                             if (start < end)
                             {
                                 //new shift 
                                 DateTime StartTime = DateStart.AddDays(d).AddHours((double)start / 2);
                                 DateTime EndTime;
-                                if (end == numTimeFrames - 1)
+                                if (end == numTimeFrames - 1) 
                                 {
                                     EndTime = DateStart.AddDays(d).AddHours((double)end / 2).AddMinutes(29);
                                 } 
