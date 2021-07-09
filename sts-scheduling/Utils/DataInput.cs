@@ -112,8 +112,9 @@ namespace sts_scheduling.Utils
                 }
             }
 
-        /*    using StreamWriter writer = new StreamWriter("D:\\STS\\InputCheck\\demandServer.txt");
-            Console.SetOut(writer);*/
+          /*  using StreamWriter writer = new("D:\\STS\\InputCheck\\demandServer1.txt");
+
+           Console.SetOut(writer);
             foreach (int day in Helper.Range(TotalDay))
             {
                 Console.WriteLine("Day " + day);
@@ -126,7 +127,8 @@ namespace sts_scheduling.Utils
                     }
                     Console.WriteLine();
                 }
-            }
+            }*/
+
             return demandMatrix;
         }
 

@@ -185,14 +185,14 @@ namespace sts_scheduling.Utils
 
                         //đếm số nhân viên làm việc tại khoảng thời gian t ngày d
 
-                        model.Add(LinearExpr.Sum(works) == demand);
-                        /*if (demands[d, p, t] == 0)
+                        //model.Add(LinearExpr.Sum(works) == demand);
+                        if (demands[d, p, t] == 0)
                         {
-                            model.Add(LinearExpr.Sum(works) == 0);                 
+                            model.Add(LinearExpr.Sum(works) == 0);
                         }
                         else
                         {
-                            var worked = model.NewIntVar(1, totalStaff, "");
+                            var worked = model.NewIntVar(0, totalStaff, "");
                             model.Add(LinearExpr.Sum(works) == worked);
                             var name = $"excessPanalty_demand(shift={t}, position={p}, day={d}";
                             var excessPanalty = model.NewIntVar(0, 100, name);
@@ -211,7 +211,7 @@ namespace sts_scheduling.Utils
 
                             objIntVars.Add(excessPanalty);
                             objIntCoeffs.Add(1);
-                        }*/
+                        }
 
 
                     }
