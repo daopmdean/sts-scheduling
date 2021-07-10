@@ -13,36 +13,55 @@ namespace sts_scheduling.Utils
         {
             List<ShiftAssignment> list = new();
 
-            var a = new ShiftAssignment
+            list.Add(new ShiftAssignment
             {
-                Username = "effstaff1",
-                SkillId = 3,
-                TimeStart = new DateTime(2021, 07, 05, 7, 0, 0),
-                TimeEnd = new DateTime(2021, 07, 05, 12, 0, 0)
-            };
-            var b = new ShiftAssignment
+                Username = "mystaff02",
+                SkillId = 18,
+                TimeStart = new DateTime(2021, 07, 05, 07, 00, 00),
+                TimeEnd = new DateTime(2021, 07, 05, 15, 0, 0)
+            });
+            list.Add(new ShiftAssignment
             {
-                Username = "effstaff2",
-                SkillId = 4,
-                TimeStart = new DateTime(2021, 07, 05, 7, 0, 0),
-                TimeEnd = new DateTime(2021, 07, 05, 12, 0, 0)
-            };
-            var c = new ShiftAssignment
+                Username = "mystaff01",
+                SkillId = 21,
+                TimeStart = new DateTime(2021, 07, 05, 9, 30, 0),
+                TimeEnd = new DateTime(2021, 07, 05, 17, 30, 0)
+            });
+            list.Add(new ShiftAssignment
             {
-                Username = "effstaff3",
-                SkillId = 2,
-                TimeStart = new DateTime(2021, 07, 05, 7, 0, 0),
-                TimeEnd = new DateTime(2021, 07, 05, 12, 0, 0)
-            };
-            var d = new ShiftAssignment
+                Username = "mystaff01",
+                SkillId = 21,
+                TimeStart = new DateTime(2021, 07, 08, 7, 0, 0),
+                TimeEnd = new DateTime(2021, 07, 08, 13, 0, 0)
+            });
+            list.Add(new ShiftAssignment
             {
-                Username = "effstaff4",
-                SkillId = 1,
-                TimeStart = new DateTime(2021, 07, 05, 7, 0, 0),
-                TimeEnd = new DateTime(2021, 07, 05, 12, 0, 0)
-            };
-
-            list.AddRange(new ShiftAssignment[] { a, b, c, d });
+                Username = "mystaff03",
+                SkillId = 20,
+                TimeStart = new DateTime(2021, 07, 09, 12, 0, 0),
+                TimeEnd = new DateTime(2021, 07, 09, 18, 0, 0)
+            });
+            list.Add(new ShiftAssignment
+            {
+                Username = "mystaff04",
+                SkillId = 20,
+                TimeStart = new DateTime(2021, 07, 08, 7, 0, 0),
+                TimeEnd = new DateTime(2021, 07, 08, 12, 30, 0)
+            });
+            list.Add(new ShiftAssignment
+            {
+                Username = "mystaff04",
+                SkillId = 18,
+                TimeStart = new DateTime(2021, 07, 08, 12, 30, 0),
+                TimeEnd = new DateTime(2021, 07, 08, 18, 00, 0)
+            });
+            list.Add(new ShiftAssignment
+            {
+                Username = "mystaff03",
+                SkillId = 20,
+                TimeStart = new DateTime(2021, 07, 08, 12, 30, 0),
+                TimeEnd = new DateTime(2021, 07, 08, 18, 0, 0)
+            });
 
             return list;
         }
