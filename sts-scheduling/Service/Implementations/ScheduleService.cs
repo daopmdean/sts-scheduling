@@ -75,7 +75,8 @@ namespace sts_scheduling.Service.Implementations
                     {
                         [TypeStaff.FULL_TIME] = FtStaffs,
                         [TypeStaff.PART_TIME] = PtStaffs
-                    }
+                    },
+                    DateStart = requests.DateStart
                 },
                 ConstraintData = ConvertData.ConvertFromRequest(requests.Constraints)
 

@@ -14,6 +14,7 @@ namespace sts_scheduling.Utils
         public DemandDay[] Demand { get; set; }
         public int NumDay { get; set; }
         public int NumTimeFrame { get; set; }
+        public DateTime DateStart { get; set; }
 
         //Id Skills must be sequequce continues and start by 0
         public DataInput()

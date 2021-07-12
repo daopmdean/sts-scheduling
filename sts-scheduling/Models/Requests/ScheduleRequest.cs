@@ -1,5 +1,6 @@
 using sts_scheduling.Data;
 using sts_scheduling.Utils;
+using System;
 using System.Collections.Generic;
 
 namespace sts_scheduling.Models.Requests
@@ -13,5 +14,7 @@ namespace sts_scheduling.Models.Requests
         public List<DemandDayRequest> Demands { get; set; }
 
         public ConstraintDataRequest Constraints { get; set; }
+
+        public DateTime DateStart { get; set; }
     }
 }
