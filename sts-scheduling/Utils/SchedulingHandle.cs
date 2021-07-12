@@ -629,8 +629,10 @@ namespace sts_scheduling.Utils
             ILiteral check = isWortAt;
 
             // cấm các ca làm việc có thời gian nhỏ hơn minShiftDuration hoặc không có ca nào diễn ra
-            foreach (var length in Range(1, minShiftDuration))
+            foreach (var length in Range(0, minShiftDuration))
             {
+                if (length == 0) continue;
+
                 foreach (var start in Range(works.Length - length + 1))
                 {
                     model.AddBoolOr(NegatedBoundedSpan(works, start, length)).OnlyEnforceIf(check);
