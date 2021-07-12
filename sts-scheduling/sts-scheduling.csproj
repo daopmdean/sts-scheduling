@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>sts_scheduling</RootNamespace>
+    <UserSecretsId>ed3191b5-6103-469c-a89f-9b3f0b8971e7</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
