@@ -13,7 +13,8 @@ namespace sts_scheduling.Utils
     {
         public DataInput DataInput { get; set; }
         public ConstraintData ConstraintData { get; set; }
-        public DateTime DateStart = new(2021, 7, 5);
+
+
         private const int UNASSIGNED = -1;
 
         public void Solve(ref ScheduleResponse response, int timeLimit)
@@ -164,8 +165,6 @@ namespace sts_scheduling.Utils
 
                     foreach (int p in Range(numPosition))
                     {
-
-
                         var works = new List<IntVar>();
 
                         foreach (int s in Range(numFTStaffs))
@@ -339,15 +338,15 @@ namespace sts_scheduling.Utils
                             if (start < end)
                             {
                                 //new shift 
-                                DateTime StartTime = DateStart.AddDays(d).AddHours((double)start / 2);
+                                DateTime StartTime = DataInput.DateStart.AddDays(d).AddHours((double)start / 2);
                                 DateTime EndTime;
                                 if (end == numTimeFrames - 1) 
                                 {
-                                    EndTime = DateStart.AddDays(d).AddHours((double)end / 2).AddMinutes(29);
+                                    EndTime = DataInput.DateStart.AddDays(d).AddHours((double)end / 2).AddMinutes(29);
                                 } 
                                 else
                                 { 
-                                    EndTime = DateStart.AddDays(d).AddHours((double)(end + 1) / 2);
+                                    EndTime = DataInput.DateStart.AddDays(d).AddHours((double)(end + 1) / 2);
                                 }
                                
                                 ShiftAssignment shift = new()
