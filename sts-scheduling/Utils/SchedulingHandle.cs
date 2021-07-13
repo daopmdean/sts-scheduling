@@ -448,6 +448,7 @@ namespace sts_scheduling.Utils
                             if (lackOfDemands[d, p, t, l] != 0 && start == UNASSIGNED)
                             {
                                 start = t;
+                                quantity = lackOfDemands[d, p, t, l];
                             }
                             else
                             if ((t == numTimeFrames - 1 || lackOfDemands[d, p, t + 1, l] != quantity) && t != 0 && start != UNASSIGNED)
@@ -474,7 +475,7 @@ namespace sts_scheduling.Utils
                                     Start = StartTime,
                                     End = EndTime,
                                     Quantity = quantity,
-                                    Level = l
+                                    Level = l + 1
                                 };
 
                                 lackDemands.Add(lackDemand);
