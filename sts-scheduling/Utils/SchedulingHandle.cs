@@ -13,7 +13,8 @@ namespace sts_scheduling.Utils
     {
         public DataInput DataInput { get; set; }
         public ConstraintData ConstraintData { get; set; }
-        public DateTime DateStart = new(2021, 7, 5);
+
+
         private const int UNASSIGNED = -1;
 
         public void Solve(ref ScheduleResponse response, int timeLimit)
@@ -41,11 +42,15 @@ namespace sts_scheduling.Utils
             var model = new CpModel();
             IntVar[,,,] work_ft = NewBoolVars(
                 model, "workFT", numFTStaffs, numDays, numPosition, numTimeFrames);
+
             int[,,,] sch_ft = new int[numFTStaffs, numPosition, numDays, numTimeFrames];
 
             IntVar[,,,] work_pt = NewBoolVars(
                 model, "workPT", numPTStaffs, numDays, numPosition, numTimeFrames);
             int[,,,] sch_pt = new int[numPTStaffs, numPosition, numDays, numTimeFrames];
+
+            int[,,,] LackOfDemandsInt = new int[numDays, numPosition, numTimeFrames, DataInput.TotalLevel];
+            IntVar[,,,] LackOfDemands = new IntVar[numDays, numPosition, numTimeFrames, DataInput.TotalLevel];
 
             //--TODO Assign Fix Assignment
 
@@ -156,7 +161,7 @@ namespace sts_scheduling.Utils
             }
 
 
-            //cover constraints for fulltime
+            //cover Demand constraints 
             foreach (int d in Range(numDays))
             {
                 foreach (int t in Range(numTimeFrames))
@@ -164,55 +169,94 @@ namespace sts_scheduling.Utils
 
                     foreach (int p in Range(numPosition))
                     {
-
-
                         var works = new List<IntVar>();
+                        List<IntVar>[] actualWorks = new List<IntVar>[DataInput.TotalLevel];
+                        
+                        var backupWorks = new IntVar[DataInput.TotalLevel];
 
-                        foreach (int s in Range(numFTStaffs))
+                        var ZERO = model.NewConstant(0);
+                        foreach (int l in Range(DataInput.TotalLevel).Reverse())
                         {
-                            works.Add(work_ft[s, p, d, t]);
+
+                            actualWorks[l] = new List<IntVar>();
+
+                            foreach (int s in Range(numFTStaffs))
+                            {
+                                // get level by skill Index + staff Index
+                                int level = DataInput.GetLevelSkillOfStaff(TypeStaff.FULL_TIME, s, p);
+                                if (level == l)
+                                {
+                                    actualWorks[l].Add(work_ft[s, p, d, t]);
+                                }
+                            }
+
+                            foreach (int s in Range(numPTStaffs))
+                            {
+                                int level = DataInput.GetLevelSkillOfStaff(TypeStaff.PART_TIME, s, p);
+                                if (level == l)
+                                {
+                                    actualWorks[l].Add(work_pt[s, p, d, t]);
+                                }
+                            }
+
+                            int demand = demands[d, p, t, l];
+
+
+                                backupWorks[l] = model.NewIntVar(-totalStaff, demand, $"backup(level={l})");
+
+                                //Level Cao nhất
+                                if (l == DataInput.TotalLevel - 1)
+                                {
+                                    // backup = demand - [số nhân viên làm việc tại level l] 
+                                    model.Add(backupWorks[l] == demand - LinearExpr.Sum(actualWorks[l]));
+                                }
+                                else
+                                {
+                                    // số đối - số Nhân viên (level l+1) còn dư sau khi đáp ứng đủ nhu cầu của (level l+1)
+                                    var repundant_Additive_Inverse = model.NewIntVar(0, totalStaff, "");
+
+                                    var tmp = new List<IntVar>
+                                {
+                                    ZERO,
+                                    backupWorks[l + 1]
+                                };
+
+                                    model.AddMinEquality(repundant_Additive_Inverse, tmp);
+                                    // backup = demand + ( - [số nhân viên còn dư từ level cao hơn] ) - [số nhân viên làm việc tại level l] 
+                                    model.Add(backupWorks[l] == demand + repundant_Additive_Inverse - LinearExpr.Sum(actualWorks[l]));
+
+                                    //Level Thap Nhat
+                                    if (l == 0)
+                                    {
+
+                                        // Không được dư nhân viên tại level thấp nhất
+                                        model.Add(backupWorks[l] >= 0);
+                                    }
+                                }
+
+                                // số nhân viên thiếu hụt so với nhu cầu nhân sự tại (level l)
+                                var lackOfDemand = model.NewIntVar(0, demand, $"lackOfDemand{d}{t}{p}{l}");
+
+                                var tmp1 = new List<IntVar>
+                                {
+                                    ZERO,
+                                    backupWorks[l]
+                                };
+
+                                model.AddMaxEquality(lackOfDemand, tmp1);
+
+
+                                LackOfDemands[d, p, t, l] = lackOfDemand;
+
+                                objIntVars.Add(lackOfDemand);
+                                objIntCoeffs.Add(l + 1);
+
+                            
+
+
+
+
                         }
-
-                        foreach (int s in Range(numPTStaffs))
-                        {
-                            works.Add(work_pt[s, p, d, t]);
-                        }
-
-                        int demand = demands[d, p, t];
-
-                        int overCoverPenalty = d == 5 || d == 6 ? 2 : 1;
-                        int underCoverPenalty = d == 5 || d == 6 ? 6 : 3;
-
-                        //đếm số nhân viên làm việc tại khoảng thời gian t ngày d
-
-                        //model.Add(LinearExpr.Sum(works) == demand);
-                        if (demands[d, p, t] == 0)
-                        {
-                            model.Add(LinearExpr.Sum(works) == 0);
-                        }
-                        else
-                        {
-                            var worked = model.NewIntVar(0, totalStaff, "");
-                            model.Add(LinearExpr.Sum(works) == worked);
-                            var name = $"excessPanalty_demand(shift={t}, position={p}, day={d}";
-                            var excessPanalty = model.NewIntVar(0, 100, name);
-                            var excess = model.NewIntVar(-totalStaff, totalStaff, "excess");
-                            var excessAbs = model.NewIntVar(0, totalStaff, "excessAbs");
-
-                            //hệ số xác định tình trạng ca là under / over
-                            var a = model.NewIntVar(0, totalStaff, "alpha");
-                            // b = reality - demand
-                            // a = (b + |b|)/2 => a = 0 if under || a = b if over
-                            // excess panalty = a*overPanalty + (|b| - a)*underPanalty
-                            model.Add(excess == worked - demand);
-                            model.AddAbsEquality(excessAbs, excess);
-                            model.Add(2 * a == (excess + excessAbs));
-                            model.Add(excessPanalty == a * overCoverPenalty + (excessAbs - a) * underCoverPenalty);
-
-                            objIntVars.Add(excessPanalty);
-                            objIntCoeffs.Add(1);
-                        }
-
 
                     }
                 }
@@ -296,6 +340,11 @@ namespace sts_scheduling.Utils
                             {
                                 sch_pt[s, p, d, t] = (int)solver.Value(work_pt[s, p, d, t]);
                             }
+
+                            foreach (int l in Range(DataInput.TotalLevel))
+                            {
+                                LackOfDemandsInt[d, p, t, l] = (int)solver.Value(LackOfDemands[d, p, t, l]);
+                            }
                         }
 
                     }
@@ -307,6 +356,9 @@ namespace sts_scheduling.Utils
                                            DataInput.StaffDic[TypeStaff.FULL_TIME], DataInput.Skills));
                 shifts.AddRange(ConvertToShiftAssignment(sch_pt, numPosition, numDays, numTimeFrames, numPTStaffs,
                                             DataInput.StaffDic[TypeStaff.PART_TIME], DataInput.Skills));
+
+                List<LackOfDemandDay> lackOfDemandDays = ConvertToLackOfDemand(LackOfDemandsInt, numPosition, numDays, numTimeFrames, DataInput.TotalLevel, DataInput.Skills);
+                response.LackOfDemandDays = lackOfDemandDays;
                 response.ShiftAssignments = shifts;
             }
         }
@@ -332,24 +384,24 @@ namespace sts_scheduling.Utils
                                 start = t;
                             }
 
-                            if ((t == numTimeFrames - 1 || sch[s, p, d, t+1] == 0) && t != 0 && start != UNASSIGNED)
+                            if ((t == numTimeFrames - 1 || sch[s, p, d, t + 1] == 0) && t != 0 && start != UNASSIGNED)
                             {
                                 end = t;
                             }
                             if (start < end)
                             {
                                 //new shift 
-                                DateTime StartTime = DateStart.AddDays(d).AddHours((double)start / 2);
+                                DateTime StartTime = DataInput.DateStart.AddDays(d).AddHours((double)start / 2);
                                 DateTime EndTime;
-                                if (end == numTimeFrames - 1) 
+                                if (end == numTimeFrames - 1)
                                 {
-                                    EndTime = DateStart.AddDays(d).AddHours((double)end / 2).AddMinutes(29);
-                                } 
-                                else
-                                { 
-                                    EndTime = DateStart.AddDays(d).AddHours((double)(end + 1) / 2);
+                                    EndTime = DataInput.DateStart.AddDays(d).AddHours((double)end / 2).AddMinutes(29);
                                 }
-                               
+                                else
+                                {
+                                    EndTime = DataInput.DateStart.AddDays(d).AddHours((double)(end + 1) / 2);
+                                }
+
                                 ShiftAssignment shift = new()
                                 {
                                     SkillId = skills[p].Id,
@@ -373,6 +425,91 @@ namespace sts_scheduling.Utils
 
             return shifts;
         }
+
+        private List<LackOfDemandDay> ConvertToLackOfDemand(int[,,,] lackOfDemands, int numPosition, int numDays,
+           int numTimeFrames, int totalLevel, List<Skill> skills)
+        {
+            List<LackOfDemandDay> lackOfDemandDays = new();
+            foreach (int d in Range(numDays))
+            {
+                List<LackOfDemandSkill> lackSkills = new List<LackOfDemandSkill>();
+                foreach (int p in Range(numPosition))
+                {
+
+                    List<LackOfDemandDetail> lackDemands = new List<LackOfDemandDetail>();
+                    foreach (int l in Range(totalLevel))
+                    {
+                        var start = UNASSIGNED;
+                        var end = UNASSIGNED;
+                        var quantity = 0;
+
+                        foreach (int t in Range(numTimeFrames))
+                        {
+                            if (lackOfDemands[d, p, t, l] != 0 && start == UNASSIGNED)
+                            {
+                                start = t;
+                                quantity = lackOfDemands[d, p, t, l];
+                            }
+                            else
+                            if ((t == numTimeFrames - 1 || lackOfDemands[d, p, t + 1, l] != quantity) && t != 0 && start != UNASSIGNED)
+                            {
+                                end = t;
+                            }
+
+                            if (start < end)
+                            {
+                                //new shift 
+                                DateTime StartTime = DataInput.DateStart.AddDays(d).AddHours((double)start / 2);
+                                DateTime EndTime;
+                                if (end == numTimeFrames - 1)
+                                {
+                                    EndTime = DataInput.DateStart.AddDays(d).AddHours((double)end / 2).AddMinutes(29);
+                                }
+                                else
+                                {
+                                    EndTime = DataInput.DateStart.AddDays(d).AddHours((double)(end + 1) / 2);
+                                }
+
+                                LackOfDemandDetail lackDemand = new()
+                                {
+                                    Start = StartTime,
+                                    End = EndTime,
+                                    Quantity = quantity,
+                                    Level = l + 1
+                                };
+
+                                lackDemands.Add(lackDemand);
+                                //reset
+                                start = UNASSIGNED;
+                                end = UNASSIGNED;
+                            }
+
+
+                        }
+                    }
+
+                    LackOfDemandSkill lackSkill = new LackOfDemandSkill()
+                    {
+                        SkillId = skills[p].Id,
+                        LackOfDemandDetails = lackDemands
+                    };
+                    lackSkills.Add(lackSkill);
+                }
+                lackOfDemandDays.Add(
+                    new LackOfDemandDay()
+                    {
+                        Day = d,
+                        LackOfDemandSkills = lackSkills
+                    }
+                    );
+            }
+
+            return lackOfDemandDays;
+        }
+
+
+
+
 
         private static IntVar[,,,] NewBoolVars(CpModel model, string namePrefix,
             int numStaffs, int numDays, int numPosition,
@@ -629,8 +766,10 @@ namespace sts_scheduling.Utils
             ILiteral check = isWortAt;
 
             // cấm các ca làm việc có thời gian nhỏ hơn minShiftDuration hoặc không có ca nào diễn ra
-            foreach (var length in Range(1, minShiftDuration))
+            foreach (var length in Range(0, minShiftDuration))
             {
+                if (length == 0) continue;
+
                 foreach (var start in Range(works.Length - length + 1))
                 {
                     model.AddBoolOr(NegatedBoundedSpan(works, start, length)).OnlyEnforceIf(check);

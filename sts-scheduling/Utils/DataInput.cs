@@ -14,6 +14,16 @@ namespace sts_scheduling.Utils
         public DemandDay[] Demand { get; set; }
         public int NumDay { get; set; }
         public int NumTimeFrame { get; set; }
+        public DateTime DateStart { get; set; }
+        public int TotalLevel = 3;
+
+        public int GetLevelSkillOfStaff(TypeStaff type, int staffId, int skillIndex)
+        {
+            Staff staff = StaffDic[type].Find(staff => staff.Id == staffId);
+            int result = staff.Skills.Find(skill => skill.SkillId == Skills[skillIndex].Id).Level;
+            result = GetLevel(result);
+            return result;
+        }
 
         //Id Skills must be sequequce continues and start by 0
         public DataInput()
@@ -80,14 +90,21 @@ namespace sts_scheduling.Utils
             return Skills.Count;
         }
 
-        public int[,,] GetDemandMatrix()
+        public int[,,,] GetDemandMatrix()
         {
-            return ConvertDemandMatrix(Demand, NumDay, NumTimeFrame, Skills);
+            return ConvertDemandMatrix(Demand, NumDay, NumTimeFrame, Skills, TotalLevel);
         }
 
-        public static int[,,] ConvertDemandMatrix(DemandDay[] Demand, int TotalDay, int TotalTimeFrame, List<Skill> Skills)
+        public static int GetLevel(int level)
         {
-            int[,,] demandMatrix = new int[TotalDay, Skills.Count, TotalTimeFrame];
+            if (level <= 1) return 0;
+            if (level == 2) return 1;
+            else return 2;
+        }
+
+        public static int[,,,] ConvertDemandMatrix(DemandDay[] Demand, int TotalDay, int TotalTimeFrame, List<Skill> Skills,int TotalLevel)
+        {
+            int[,,,] demandMatrix = new int[TotalDay, Skills.Count, TotalTimeFrame, TotalLevel];
             foreach (int day in Helper.Range(TotalDay))
             {
                 DemandDay demandByDay = Demand.ToList().Find(e => e.Day == day);
@@ -103,10 +120,12 @@ namespace sts_scheduling.Utils
                     {
                         int start = demands[i].Session.Start;
                         int end = demands[i].Session.End;
-                        int quality = demands[i].Quantity;
+                        int quantity = demands[i].Quantity;
+                        int level = GetLevel(demands[i].Level);
+
                         for (int timeIndex = start; timeIndex <= end && timeIndex < TotalTimeFrame; timeIndex++)
                         {
-                            demandMatrix[day, skill, timeIndex] = quality;
+                            demandMatrix[day, skill, timeIndex, level] += quantity;
                         }
                     }
                 }

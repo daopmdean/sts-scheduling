@@ -24,7 +24,6 @@
     <Folder Include="Service\" />
     <Folder Include="Service\Interfaces\" />
     <Folder Include="Service\Implementations\" />
-    <Folder Include="Models\Responses\" />
     <Folder Include="Enums\" />
   </ItemGroup>
   <ItemGroup>

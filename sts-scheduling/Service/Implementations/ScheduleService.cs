@@ -19,6 +19,8 @@ namespace sts_scheduling.Service.Implementations
         public async Task<ScheduleResponse> ComputeSchedule(
             ScheduleRequest requests)
         {
+
+
             int NumTimeFrames = 48;
             //Get data
 
@@ -41,7 +43,7 @@ namespace sts_scheduling.Service.Implementations
                 {
                     Id = Id,
                     Username = staffRequests[i].Username,
-                    Skills = staffRequests[i].Skills.ToArray(),
+                    Skills = staffRequests[i].Skills,
                     //convert AvailableTime
                     Availables = (AvailableDay[])ConvertData.ConvertFromRequest(staffRequests[i].AvalailableDays, NumTimeFrames),
                 };
@@ -58,7 +60,7 @@ namespace sts_scheduling.Service.Implementations
                     FtStaffs.Add(staff);
                 }
             }
-
+          
             //convert Demand
             DemandDay[] demands = (DemandDay[])ConvertData.ConvertFromRequest(requests.Demands, NumTimeFrames);
 
@@ -75,7 +77,8 @@ namespace sts_scheduling.Service.Implementations
                     {
                         [TypeStaff.FULL_TIME] = FtStaffs,
                         [TypeStaff.PART_TIME] = PtStaffs
-                    }
+                    },
+                    DateStart = requests.DateStart
                 },
                 ConstraintData = ConvertData.ConvertFromRequest(requests.Constraints)
 
