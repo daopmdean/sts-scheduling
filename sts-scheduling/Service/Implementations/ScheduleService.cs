@@ -43,7 +43,7 @@ namespace sts_scheduling.Service.Implementations
                 {
                     Id = Id,
                     Username = staffRequests[i].Username,
-                    Skills = staffRequests[i].Skills.ToArray(),
+                    Skills = staffRequests[i].Skills,
                     //convert AvailableTime
                     Availables = (AvailableDay[])ConvertData.ConvertFromRequest(staffRequests[i].AvalailableDays, NumTimeFrames),
                 };

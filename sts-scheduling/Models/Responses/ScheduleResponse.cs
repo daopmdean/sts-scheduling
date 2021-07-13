@@ -14,5 +14,6 @@ namespace sts_scheduling.Models.Responses
         public double WallTime { get; set; }
 
         public IEnumerable<ShiftAssignment> ShiftAssignments { get; set; }
+        public IEnumerable<LackOfDemandDay> LackOfDemandDays { get; set; }
     }
 }
