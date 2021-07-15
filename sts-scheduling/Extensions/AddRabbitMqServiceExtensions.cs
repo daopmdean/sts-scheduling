@@ -44,6 +44,7 @@ namespace sts_scheduling.Extensions
                 ScheduleService service = new();
                 var scheduleResponse = service.ComputeSchedule(scheduleRequest);
                 scheduleResponse.ShiftScheduleResultId = scheduleRequest.Id;
+                scheduleResponse.StoreId = scheduleRequest.StoreId;
 
                 SendHttpRequest.SendScheduleResult(scheduleResponse).Wait();
 

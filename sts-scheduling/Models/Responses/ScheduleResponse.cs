@@ -6,6 +6,7 @@ namespace sts_scheduling.Models.Responses
     public class ScheduleResponse
     {
         public int ShiftScheduleResultId { get; set; }
+        public int StoreId { get; set; }
         public CpSolverStatus Status { get; set; }
 
         public long Conflicts { get; set; }
