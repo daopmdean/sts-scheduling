@@ -11,7 +11,7 @@ namespace sts_scheduling.Models.Responses
         public List<LackOfDemandSkill> LackOfDemandSkills { get; set; }
     }
 
-    public class LackOfDemandSkill  
+    public class LackOfDemandSkill
     {
         public int SkillId { set; get; }
         public List<LackOfDemandDetail> LackOfDemandDetails { get; set; }

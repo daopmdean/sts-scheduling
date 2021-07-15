@@ -37,12 +37,12 @@ namespace sts_scheduling.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ScheduleResponse>> ComputeSchedule(
+        public ActionResult<ScheduleResponse> ComputeSchedule(
             ScheduleRequest request)
         {
             try
             {
-                return Ok(await _scheduleService.ComputeSchedule(request));
+                return Ok(_scheduleService.ComputeSchedule(request));
             }
             catch (Exception ex)
             {

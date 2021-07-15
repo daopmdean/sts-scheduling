@@ -16,11 +16,9 @@ namespace sts_scheduling.Service.Implementations
         {
         }
 
-        public async Task<ScheduleResponse> ComputeSchedule(
+        public ScheduleResponse ComputeSchedule(
             ScheduleRequest requests)
         {
-
-
             int NumTimeFrames = 48;
             //Get data
 
