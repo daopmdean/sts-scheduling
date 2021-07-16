@@ -17,9 +17,14 @@ namespace sts_scheduling.Extensions
         {
             var factory = new ConnectionFactory
             {
-                HostName = configuration.GetSection("RabbitMq")["HostName"],
-                UserName = configuration.GetSection("RabbitMq")["UserName"],
-                Password = configuration.GetSection("RabbitMq")["Password"]
+                VirtualHost = configuration
+                    .GetSection("RabbitMqHeroku")["VirtualHost"],
+                HostName = configuration
+                    .GetSection("RabbitMqHeroku")["HostName"],
+                UserName = configuration
+                    .GetSection("RabbitMqHeroku")["UserName"],
+                Password = configuration
+                    .GetSection("RabbitMqHeroku")["Password"]
             };
 
             var connection = factory.CreateConnection();
