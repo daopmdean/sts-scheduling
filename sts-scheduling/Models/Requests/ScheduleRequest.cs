@@ -7,6 +7,8 @@ namespace sts_scheduling.Models.Requests
 {
     public class ScheduleRequest
     {
+        public int Id { get; set; }
+        public int StoreId { get; set; }
         public List<StaffRequestData> Staffs { get; set; }
 
         public List<Skill> Skills { get; set; }

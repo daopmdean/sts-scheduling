@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using sts_scheduling.Extensions;
 using sts_scheduling.Service.Implementations;
 using sts_scheduling.Service.Interfaces;
 
@@ -21,6 +22,7 @@ namespace sts_scheduling
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRabbitMQService(Configuration);
             services.AddScoped<IScheduleService, ScheduleService>();
             services.AddControllers();
             services.AddCors();
@@ -39,7 +41,8 @@ namespace sts_scheduling
             }
 
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "STS-schedule v1"));
+            app.UseSwaggerUI(c => 
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "STS-schedule v1"));
 
             app.UseHttpsRedirection();
 
