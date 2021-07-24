@@ -20,9 +20,9 @@ namespace sts_scheduling.Utils
         public int GetLevelSkillOfStaff(TypeStaff type, int staffId, int skillIndex)
         {
             Staff staff = StaffDic[type].Find(staff => staff.Id == staffId);
-            int result = staff.Skills.Find(skill => skill.SkillId == Skills[skillIndex].Id).Level;
-            result = GetLevel(result);
-            return result;
+            var result = staff.Skills.Find(skill => skill.SkillId == Skills[skillIndex].Id);
+            if (result == null) return -1;         
+            return GetLevel(result.Level);
         }
 
         //Id Skills must be sequequce continues and start by 0
