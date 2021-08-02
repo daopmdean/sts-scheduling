@@ -84,7 +84,7 @@ namespace sts_scheduling.Service.Implementations
 
             ScheduleResponse response = new();
 
-            handle.Solve(ref response, 120);
+            handle.Solve(ref response, 30);
 
             return response;
         }
