@@ -53,7 +53,7 @@ namespace sts_scheduling.Service.Implementations
                     PtStaffs.Add(staff);
                 }
                 //FULLLTIME
-                else
+                else if (staffRequests[i].TypeStaff == 0)
                 {
                     FtStaffs.Add(staff);
                 }
