@@ -22,7 +22,7 @@ namespace sts_scheduling.Controllers
         {
             try
             {
-                return Ok("Hello");
+                return Ok("Hello from algorithm");
             }
             catch (Exception ex)
             {
