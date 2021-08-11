@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using sts_scheduling.Models.Requests;
 using sts_scheduling.Models.Responses;

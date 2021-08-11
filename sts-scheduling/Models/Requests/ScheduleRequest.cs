@@ -1,7 +1,6 @@
-using sts_scheduling.Data;
-using sts_scheduling.Utils;
 using System;
 using System.Collections.Generic;
+using sts_scheduling.Data;
 
 namespace sts_scheduling.Models.Requests
 {
